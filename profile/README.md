@@ -1,6 +1,6 @@
 # Group G01
 ## 題目
-<img width="500" src="https://github.com/user-attachments/assets/a247bfb3-de26-42bb-b44a-6aee03b59c92" style="margin-right:10px" />
+高鐵系統資料庫
 
 ## Members 成員
 1. 41143236 陳彥福
