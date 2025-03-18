@@ -8,7 +8,7 @@
 <img width="250" src="https://github.com/user-attachments/assets/eaa7151f-5aa8-4f56-84f7-73bf889f21a9" style="margin-right:10px" />
 
 ## Members 成員
-1. 41143236 陳彥福
+1. 41143236 陳彥福 興趣：coding、動漫
 2. 41143241 黃子峻
 3. 41143245 楊祐宇
 4. 41143259 羅文鍵
