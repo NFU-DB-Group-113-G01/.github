@@ -1,11 +1,11 @@
-# Group G01
-## Members 成員
+# 👋 Group G01
+## 👥 Members 成員
 1. 41143236 陳彥福 興趣：coding、動漫
 2. 41143241 黃子峻
 3. 41143245 楊祐宇
 4. 41143259 羅文鍵 興趣：看動漫、coding
 
-# 🏨 房間管理系統
+# 🏨 [房間管理系統](https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content=DAGj9Gu7cDI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9883e3e557)
 
 ## 🔸 應用情境
 飯店需要即時掌握房間狀況，包括預訂、入住、退房、清潔、維修等流程。
@@ -67,38 +67,36 @@
 2. 餐點訂單與出菜
     - 廚房可根據訂單製作餐點並列出出餐明細
 
-3. 食材庫存管理
-    - 登記食材進貨、消耗，自動警示即將缺貨品項
-
-4. 餐飲報表
+3. 餐飲報表
     - 出餐統計、熱門菜色排行、食材使用與成本報表
 
 ## 完整性限制
 1. ROOM.RoomStatus
-   - 限定值如：空房、已預訂、維修中。
+   - 限定值如：空房、已預訂、維修中
 
 2. CheckOutDate > CheckInDate
-   - 退房日必須晚於入住日。
+   - 退房日必須晚於入住日
 
-3. ROOM RoomID
-   - 每個房間有唯一識別編號。
+3. RoomID、CustomerID
+   - int 每個房間與客戶有唯一識別編號
 
-4. Email
-   - 需符合 Email 格式。
+4. Email、Phone
+   - 需符合對應的 Email  或是 電話號碼 格式
 
 5. BasePrice、FinalPrice
-   - 最大值 99999999.99，應為非負。
+   - decimal(10,2) 最大值 99999999.99 應為正整數
 
-6. CheckInDate, CheckOutDate
-   - 需符合日期格式(Y/M/D)，並檢查邏輯
+6. Name、RoomType
+   - 字元長度上限（例: varchar(50)）
 
 ## ER Diagram
 ### 圖片
-![mermaid-diagram-2025-04-07-213657](https://github.com/user-attachments/assets/7b8f0522-16c0-43fb-afa7-dbd620331459)
+
+![mermaid-diagram-2025-04-08-205351](https://github.com/user-attachments/assets/ae7d8aae-525e-4091-9b82-d68ddc1afda4)
 
 ### 程式碼
 ```erDiagram
-erDiagram    
+erDiagram
     CUSTOMER {
         int CustomerID PK "顧客唯一編號"
         varchar(50) Name "顧客姓名"
@@ -131,12 +129,13 @@ erDiagram
         varchar(30) Name "季節名稱（如：暑假）"
         date StartDate "開始日期"
         date EndDate "結束日期"
-        decimal(5，2) PriceAdjustmentPercent "調整比例（例：20 表示 +20%）"
+        decimal(5，2) PriceAdjustmentPercent "調整比例（例：20 表示 +20%）" 
     }
     ROOM_SEASON_RATE {
         int RoomID FK "房間 ID"
         int SeasonID FK "季節 ID"
         decimal(10，2) AdjustedPrice "該房型於該季節的特別價格"
+        %% Composite PK: (RoomID, SeasonID)
     }
     RESTAURANT {
         int RestaurantID PK "餐廳 ID"
@@ -148,12 +147,24 @@ erDiagram
         int RestaurantID FK "所屬餐廳"
         varchar(50) Name "菜名（如牛排）"
         varchar(30) Category "類別（如主餐、甜點）"
-        decimal(10，2) Price "價格"
+        decimal(10，2) Price "價格" 
     }
     MEAL_PLAN_MENU {
         int MealPlanID FK "餐食方案 ID"
         int MenuItemID FK "包含的菜色 ID"
+        %% Composite PK: (MealPlanID, MenuItemID)
     }
+    EMPLOYEE {
+        int EmployeeID PK "員工唯一編號"
+        varchar(50) Name "員工姓名"
+        varchar(30) Position "職位（例如：櫃檯、清潔人員、廚師）"
+        varchar(30) Department "部門（例如：前台、房務、餐廳）"
+        date HireDate "入職日期"
+        varchar(15) Phone "聯絡電話"
+        bool IsActive "是否在職 (TRUE/FALSE)"
+    }
+
+    %% Relationships (關係)
     CUSTOMER ||--o{ BOOKING : "訂房"
     ROOM ||--o{ BOOKING : "被預訂"
     MEAL_PLAN ||--o{ BOOKING : "選擇"
@@ -162,9 +173,7 @@ erDiagram
     RESTAURANT ||--o{ MENU_ITEM : "提供"
     MEAL_PLAN ||--o{ MEAL_PLAN_MENU : "包含"
     MENU_ITEM ||--o{ MEAL_PLAN_MENU : "屬於"
-
 ```
-
 
 ![481505943_536664402293447_5913814097322424692_n](https://github.com/user-attachments/assets/e33bc92e-6c71-47d5-b434-e1ab33855fec)
 
@@ -176,9 +185,10 @@ erDiagram
  - [x] 系統需求說明
  - [x] 完整性限制
  - [x] ER Diagram及詳細說明
+
  <img width="250" src="https://github.com/user-attachments/assets/eaa7151f-5aa8-4f56-84f7-73bf889f21a9" style="margin-right:10px" />
 
-## 🔗 link
+## 🔗 Link
 [ER Diagram 圖](https://mermaid.live/)
 
 <img width="400" src="https://github.com/user-attachments/assets/ac322e84-128c-4136-8261-7bd4c894ce02" style="margin-right:10px" />
