@@ -5,9 +5,7 @@
 3. 41143245 楊祐宇
 4. 41143259 羅文鍵 興趣：看動漫、coding
 
-# 🏨 [飯店管理系統]
-## Canva
-https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content=DAGj9Gu7cDI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9883e3e557
+# 🏨 [飯店管理系統](#-link)
 ## 🔸 應用情境
 
 ### 住宿管理系統
@@ -88,90 +86,8 @@ https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content
    - 字元長度上限（例: varchar(50)）
 
 ## ER Diagram
-### 圖片
-
-![mermaid-diagram-2025-04-08-205351](https://github.com/user-attachments/assets/ae7d8aae-525e-4091-9b82-d68ddc1afda4)
-
-### 程式碼
-```erDiagram
-erDiagram
-    CUSTOMER {
-        int CustomerID PK "顧客唯一編號"
-        varchar(50) Name "顧客姓名"
-        varchar(15) Phone "聯絡電話"
-        varchar(100) Email "電子郵件"
-    }
-    ROOM {
-        int RoomID PK "房間唯一編號"
-        varchar(30) RoomType "房型（單人房、雙人房等）"
-        varchar(30) RoomStatus "房間狀態（空房、已預訂、維修中等）"
-        varchar(30) RoomCleanStatus "房間清潔狀態（待清潔、清潔中、已完成等）"
-        decimal(10，2) BasePrice "房間基本價格"
-    }
-    BOOKING {
-        int BookingID PK "訂房編號"
-        int CustomerID FK "對應的顧客"
-        int RoomID FK "訂到的房間"
-        date CheckInDate "入住日期"
-        date CheckOutDate "退房日期"
-        int MealPlanID FK "選擇的餐食方案"
-        decimal(10，2) FinalPrice "最終價格（含房價 + 餐食 + 季節調整）"
-    }
-    MEAL_PLAN {
-        int MealPlanID PK "方案 ID"
-        varchar(50) Name "名稱（如「一泊一食」、「無餐」）"
-        decimal(10，2) ExtraCharge "加購費用"
-    }
-    SEASON {
-        int SeasonID PK "季節 ID"
-        varchar(30) Name "季節名稱（如：暑假）"
-        date StartDate "開始日期"
-        date EndDate "結束日期"
-        decimal(5，2) PriceAdjustmentPercent "調整比例（例：20 表示 +20%）" 
-    }
-    ROOM_SEASON_RATE {
-        int RoomID FK "房間 ID"
-        int SeasonID FK "季節 ID"
-        decimal(10，2) AdjustedPrice "該房型於該季節的特別價格"
-        %% Composite PK: (RoomID, SeasonID)
-    }
-    RESTAURANT {
-        int RestaurantID PK "餐廳 ID"
-        varchar(50) Name "餐廳名稱"
-        varchar(20) OpenHours "營業時間（例如 06:30–10:00）"
-    }
-    MENU_ITEM {
-        int MenuItemID PK "菜色 ID"
-        int RestaurantID FK "所屬餐廳"
-        varchar(50) Name "菜名（如牛排）"
-        varchar(30) Category "類別（如主餐、甜點）"
-        decimal(10，2) Price "價格" 
-    }
-    MEAL_PLAN_MENU {
-        int MealPlanID FK "餐食方案 ID"
-        int MenuItemID FK "包含的菜色 ID"
-        %% Composite PK: (MealPlanID, MenuItemID)
-    }
-    EMPLOYEE {
-        int EmployeeID PK "員工唯一編號"
-        varchar(50) Name "員工姓名"
-        varchar(30) Position "職位（例如：櫃檯、清潔人員、廚師）"
-        varchar(30) Department "部門（例如：前台、房務、餐廳）"
-        date HireDate "入職日期"
-        varchar(15) Phone "聯絡電話"
-        bool IsActive "是否在職 (TRUE/FALSE)"
-    }
-
-    %% Relationships (關係)
-    CUSTOMER ||--o{ BOOKING : "訂房"
-    ROOM ||--o{ BOOKING : "被預訂"
-    MEAL_PLAN ||--o{ BOOKING : "選擇"
-    ROOM ||--o{ ROOM_SEASON_RATE : "設定季節價格"
-    SEASON ||--o{ ROOM_SEASON_RATE : "影響房間價格"
-    RESTAURANT ||--o{ MENU_ITEM : "提供"
-    MEAL_PLAN ||--o{ MEAL_PLAN_MENU : "包含"
-    MENU_ITEM ||--o{ MEAL_PLAN_MENU : "屬於"
-```
+### 圖片（點擊圖片並搭配Ctrl與滑鼠滾輪可放大檢視圖片）
+![ER Diagram](https://github.com/user-attachments/assets/8f3ae386-de14-43ca-8315-7de7b9302485)
 
 
 ## 代辦事項
@@ -185,5 +101,4 @@ erDiagram
 
 
 ## 🔗 Link
-[ER Diagram 圖](https://mermaid.live/)
-
+- [簡報](https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content=DAGj9Gu7cDI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9883e3e557)
