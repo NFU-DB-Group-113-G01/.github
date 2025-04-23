@@ -5,12 +5,10 @@
 3. 41143245 楊祐宇
 4. 41143259 羅文鍵 興趣：看動漫、coding
 
-# 🏨 [房間管理系統](https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content=DAGj9Gu7cDI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9883e3e557)
-
+# 🏨 [飯店管理系統]
+## Canva
+https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content=DAGj9Gu7cDI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9883e3e557
 ## 🔸 應用情境
-飯店需要即時掌握房間狀況，包括預訂、入住、退房、清潔、維修等流程。
-
-## ✅ 使用案例
 
 ### 住宿管理系統
 
@@ -175,7 +173,6 @@ erDiagram
     MENU_ITEM ||--o{ MEAL_PLAN_MENU : "屬於"
 ```
 
-![481505943_536664402293447_5913814097322424692_n](https://github.com/user-attachments/assets/e33bc92e-6c71-47d5-b434-e1ab33855fec)
 
 ## 代辦事項
  - [x] 新增成員
@@ -186,9 +183,7 @@ erDiagram
  - [x] 完整性限制
  - [x] ER Diagram及詳細說明
 
- <img width="250" src="https://github.com/user-attachments/assets/eaa7151f-5aa8-4f56-84f7-73bf889f21a9" style="margin-right:10px" />
 
 ## 🔗 Link
 [ER Diagram 圖](https://mermaid.live/)
 
-<img width="400" src="https://github.com/user-attachments/assets/ac322e84-128c-4136-8261-7bd4c894ce02" style="margin-right:10px" />
