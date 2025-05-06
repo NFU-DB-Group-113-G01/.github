@@ -69,26 +69,43 @@
     - 出餐統計、熱門菜色排行、食材使用與成本報表
 
 ## 完整性限制
-1. ROOM.RoomStatus
-   - 限定值如：空房、已預訂、維修中
+### 實體完整性（Entity Integrity）
+主鍵不可為空值（NULL），並且其值在資料表中必須是唯一的。
 
-2. CheckOutDate > CheckInDate
-   - 退房日必須晚於入住日
+| 資料表 (Table)	      | 主鍵欄位 (Primary Key Column(s))	| 說明 |
+|---------------------|---------------------------------|------|
+| Customer |           	CustomerID | 	        每位顧客都有唯一的識別編號 |
+| Room |             	RoomID | 	            每個房間都有唯一的識別編號 |
+| Booking |         	BookingID | 	        每筆訂房記錄都有唯一的識別編號 |
+| Meal_Plan	|           MealPlanID | 	        每個餐飲方案都有唯一的識別碼 |
+| Season |             	SeasonID | 	            每個季節定義都有唯一的識別碼 |
+| Restaurant |         	RestaurantID |  	    每間餐廳都有唯一的識別碼 |
+| Menu_Item	|           MenuItemID | 	        每個菜單項目都有唯一的識別編號 |
+| Employee |            EmployeeID | 	        每位員工都有唯一的識別編號 |
+| Room_Type	|           RoomTypeID |         	每種房型都有唯一的識別碼 |
+| Meal_Plan_Menu | 	    MealPlanMenuID | 	    餐飲方案與菜單項目的關聯記錄有唯一識別碼 |
+| Room_Season_Rate | 	RoomTypeID, SeasonID |  複合主鍵，定義特定房型在特定季節的唯一價格調整 |
 
-3. RoomID、CustomerID
-   - int 每個房間與客戶有唯一識別編號
+### 參照完整性（Referential Integrity）
+外鍵欄位的值必須參照到其主參考資料表中已存在的主鍵值，或者外鍵值可以為空值（NULL），除非該外鍵欄位被定義為不可為空。
 
-4. Email、Phone
-   - 需符合對應的 Email  或是 電話號碼 格式
+| 子資料表 (Child Table) | 外鍵欄位 (Foreign Key Column(s)) | 參照主資料表 (Parent Table) | 說明 |
+|-----------------------|----------------------------------|----------------------------|-----|
+| Booking | 	        CustomerID | 	Customer | 	    每筆訂房記錄必須關聯到一位已存在的顧客 |
+| Booking | 	        RoomID | 	    Room | 	        每筆訂房記錄必須關聯到一個已存在的房間 |
+| Booking | 	        MealPlanID | 	Meal_Plan | 	訂房記錄可以選擇一個已存在的餐飲方案 |
+| Booking | 	        EmployeeID | 	Employee | 	    訂房記錄可以關聯到一位處理該訂單的員工  |
+| Room | 	            RoomTypeID | 	Room_Type | 	每個房間必須歸屬於一個已存在的房型 |
+| Employee | 	        RestaurantID | 	Restaurant | 	每位員工可以歸屬於一間已存在的餐廳 |
+| Menu_Item	|           RestaurantID | 	Restaurant | 	每個菜單項目必須歸屬於一間已存在的餐廳 |
+| Meal_Plan_Menu | 	    MealPlanID | 	Meal_Plan | 	此關聯記錄中的餐飲方案必須是已存在的餐飲方案 |
+| Meal_Plan_Menu |     	MenuItemID | 	Menu_Item | 	此關聯記錄中包含的菜單項目必須是已存在的項目 |
+| Room_Season_Rate | 	RoomTypeID | 	Room_Type | 	價格調整所適用的房型必須是已存在的房型 |
+| Room_Season_Rate | 	SeasonID | 	    Season | 	    價格調整所適用的季節必須是已存在的季節定義 |
 
-5. BasePrice、FinalPrice
-   - decimal(10,2) 最大值 99999999.99 應為正整數
-
-6. Name、RoomType
-   - 字元長度上限（例: varchar(50)）
 
 ## ER Diagram
-### 圖片（點擊圖片🖼️並搭配建盤Ctrl⌨️與滑鼠滾輪🖱️可放大檢視圖片🔎）
+### 圖片（點擊圖片🖼️並搭配鍵盤Ctrl⌨️與滑鼠滾輪🖱️可放大檢視圖片🔎）
 ![ER Diagram](https://github.com/user-attachments/assets/8832f638-0d00-46dd-b787-3cc9ed9f9bc1)
 
 ## SQL Schema
