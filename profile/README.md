@@ -93,268 +93,154 @@
 
 ## SQL Schema
 ```SQL
--- ==================================================
--- 核心實體 (基於 ER 圖)
--- ==================================================
-
--- 餐廳表 (依據 ERD 新增)
 CREATE TABLE Restaurant (
     RestaurantID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,             -- 餐廳名稱
-    -- DayOfWeek, OpenTime, CloseTime 若複雜，可能需要獨立的營業時間表
-    -- 根據 ERD 屬性簡化:
-    DayOfWeek VARCHAR(50),                  -- 例如: '週一至週五', '週末', '每日'
-    OpenTime TIME,                          -- 開放時間
-    CloseTime TIME,                         -- 關閉時間
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 建立時間
+    Name VARCHAR(255),
+    DayOfWeek VARCHAR(50),
+    OpenTime TIME,
+    CloseTime TIME
 );
 
--- 員工表 (原 Staff 表)
 CREATE TABLE Employee (
     EmployeeID INT AUTO_INCREMENT PRIMARY KEY,
-    RestaurantID INT NULL,                  -- 外鍵，員工所屬餐廳 (若為中央人員可為 NULL)
-    Username VARCHAR(50) NOT NULL UNIQUE,   -- 登入帳號 (ERD 屬性未顯示，為登入功能添加)
-    PasswordHash VARCHAR(255) NOT NULL,     -- 密碼雜湊 (為登入功能添加)
-    Name VARCHAR(100) NOT NULL,             -- 姓名 (來自 ERD)
-    Position VARCHAR(50),                   -- 職位 (來自 ERD)
-    Department VARCHAR(50),                 -- 部門 (來自 ERD)
-    HireDate DATE,                          -- 到職日期 (來自 ERD)
-    Phone VARCHAR(20),                      -- 電話 (來自 ERD)
-    IsActive BOOLEAN DEFAULT TRUE,          -- 是否在職 (來自 ERD)
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 建立時間
-    FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID) -- 關聯到餐廳表
+    Name VARCHAR(255),
+    Position VARCHAR(100),
+    Department VARCHAR(100),
+    HireDate DATE,
+    Phone VARCHAR(50),
+    IsActive BOOLEAN,
+    RestaurantID INT,
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID)
 );
 
--- 顧客表
 CREATE TABLE Customer (
     CustomerID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,             -- 姓名 (來自 ERD, 整合姓氏名字)
-    Phone VARCHAR(20) UNIQUE,               -- 電話 (來自 ERD)
-    Email VARCHAR(100) UNIQUE,              -- 電子郵件 (來自 ERD)
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 建立時間
+    Name VARCHAR(255),
+    Phone VARCHAR(50),
+    Email VARCHAR(255)
 );
 
--- 房型表 (依據 ERD 修改)
-CREATE TABLE RoomType (
+CREATE TABLE Room_Type (
     RoomTypeID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(50) NOT NULL UNIQUE,       -- 房型名稱 (來自 ERD)
-    BedCount INT CHECK (BedCount > 0),      -- 床位數 (來自 ERD)
-    Description TEXT NULL,                  -- 描述 (ERD 屬性未顯示，保留彈性)
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 建立時間
+    Name VARCHAR(100),
+    BedCount INT
 );
 
--- 房間表 (依據 ERD 修改)
 CREATE TABLE Room (
     RoomID INT AUTO_INCREMENT PRIMARY KEY,
-    RoomNumber VARCHAR(10) NOT NULL UNIQUE, -- 房號 (來自 ERD)
-    RoomTypeID INT NOT NULL,                -- 房型外鍵 (來自 ERD)
-    RoomStatus VARCHAR(20) NOT NULL DEFAULT 'Available', -- 房間狀態 (來自 ERD, 建議用 ENUM 約束: 'Available', 'Occupied', 'Booked', 'Cleaning', 'Maintenance', 'OutOfOrder')
-    BasePrice DECIMAL(10, 2) NOT NULL CHECK (BasePrice >= 0), -- 基本價格 (來自 ERD)
-    Floor INT NULL,                         -- 樓層 (ERD 屬性未顯示，保留彈性)
-    FOREIGN KEY (RoomTypeID) REFERENCES RoomType(RoomTypeID) -- 關聯到房型表
+    RoomTypeID INT,
+    RoomNumber VARCHAR(50),
+    RoomStatus VARCHAR(50),
+    BasePrice DECIMAL(10, 2),
+    FOREIGN KEY (RoomTypeID) REFERENCES Room_Type(RoomTypeID)
 );
 
--- 季節表 (依據 ERD 新增)
 CREATE TABLE Season (
     SeasonID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(50) NOT NULL UNIQUE,       -- 季節名稱 (來自 ERD, 例如: '旺季', '淡季', '假日')
-    StartDate DATE NOT NULL,                -- 開始日期 (來自 ERD)
-    EndDate DATE NOT NULL,                  -- 結束日期 (來自 ERD)
-    PriceAdjustmentPercent DECIMAL(5, 2) DEFAULT 0.00, -- 價格調整百分比 (來自 ERD, 例如: 20.00 代表 +20%, -10.00 代表 -10%)
-    CONSTRAINT chk_season_dates CHECK (EndDate > StartDate) -- 檢查結束日期需晚於開始日期
+    Name VARCHAR(100),
+    StartDate DATE,
+    EndDate DATE,
+    PriceAdjustmentPercent DECIMAL(5, 2)
 );
 
--- 房間季節價格表 (依據 ERD 新增)
--- 連接 RoomType 和 Season 以定義特定期間的價格
-CREATE TABLE RoomSeasonRate (
-    RoomTypeID INT NOT NULL,
-    SeasonID INT NOT NULL,
-    AdjustedPrice DECIMAL(10, 2) NOT NULL CHECK (AdjustedPrice >= 0), -- 調整後價格 (來自 ERD, 此價格適用於此房型在此季節期間)
-    PRIMARY KEY (RoomTypeID, SeasonID),     -- 複合主鍵
-    FOREIGN KEY (RoomTypeID) REFERENCES RoomType(RoomTypeID) ON DELETE CASCADE, -- 關聯到房型表
-    FOREIGN KEY (SeasonID) REFERENCES Season(SeasonID) ON DELETE CASCADE       -- 關聯到季節表
+CREATE TABLE Room_Season_Rate (
+    RoomTypeID INT,
+    SeasonID INT,
+    AdjustedPrice DECIMAL(10, 2),
+    PRIMARY KEY (RoomTypeID, SeasonID),
+    FOREIGN KEY (RoomTypeID) REFERENCES Room_Type(RoomTypeID),
+    FOREIGN KEY (SeasonID) REFERENCES Season(SeasonID)
 );
 
--- 餐飲方案表 (依據 ERD 新增)
-CREATE TABLE MealPlan (
+CREATE TABLE Meal_Plan (
     MealPlanID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL UNIQUE,      -- 方案名稱 (來自 ERD, 例如: '僅住房', '含早餐', '半食宿')
-    ExtraCharge DECIMAL(10, 2) NOT NULL DEFAULT 0.00 -- 額外費用 (來自 ERD, 此方案的附加費用，可能是每天或每次住宿)
+    Name VARCHAR(100),
+    ExtraCharge DECIMAL(10, 2)
 );
 
--- 菜單項目表 (依據 ERD 修改)
-CREATE TABLE MenuItem (
+CREATE TABLE Menu_Item (
     MenuItemID INT AUTO_INCREMENT PRIMARY KEY,
-    RestaurantID INT NOT NULL,              -- 所屬餐廳外鍵 (來自 ERD)
-    Name VARCHAR(100) NOT NULL,             -- 項目名稱 (來自 ERD)
-    Category VARCHAR(50),                   -- 分類 (來自 ERD)
-    Price DECIMAL(10, 2) NOT NULL CHECK (Price >= 0), -- 價格 (來自 ERD)
-    IsAvailable BOOLEAN DEFAULT TRUE,       -- 是否供應 (ERD 未顯示，但實務上常用)
-    FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID) -- 關聯到餐廳表
+    RestaurantID INT,
+    Name VARCHAR(100),
+    Category VARCHAR(100),
+    Price DECIMAL(10, 2),
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID)
 );
 
--- 餐飲方案菜單表 (依據 ERD 新增)
--- 作為 MealPlan 和 MenuItem 之間的多對多關聯表
-CREATE TABLE MealPlanMenu (
-    MealPlanMenuID INT AUTO_INCREMENT PRIMARY KEY, -- 代理主鍵 (如 ERD 所示)
-    MealPlanID INT NOT NULL,
-    MenuItemID INT NOT NULL,
-    -- 可考慮增加份數或餐點類型 (如前菜/主菜) 欄位
-    UNIQUE (MealPlanID, MenuItemID),        -- 確保同一項目不被重複加入同一方案
-    FOREIGN KEY (MealPlanID) REFERENCES MealPlan(MealPlanID) ON DELETE CASCADE, -- 關聯到餐飲方案表
-    FOREIGN KEY (MenuItemID) REFERENCES MenuItem(MenuItemID) ON DELETE CASCADE  -- 關聯到菜單項目表
+CREATE TABLE Meal_Plan_Menu (
+    MealPlanMenuID INT AUTO_INCREMENT PRIMARY KEY,
+    MealPlanID INT,
+    MenuItemID INT,
+    FOREIGN KEY (MealPlanID) REFERENCES Meal_Plan(MealPlanID),
+    FOREIGN KEY (MenuItemID) REFERENCES Menu_Item(MenuItemID)
 );
 
--- 預訂表 (依據 ERD 修改)
 CREATE TABLE Booking (
     BookingID INT AUTO_INCREMENT PRIMARY KEY,
-    CustomerID INT NOT NULL,                -- 顧客外鍵 (來自 ERD)
-    RoomID INT NOT NULL,                    -- 房間外鍵 (來自 ERD)
-    EmployeeID INT NULL,                    -- 處理員工外鍵 ('Handled by' 關係, 線上預訂可為 NULL)
-    MealPlanID INT NULL,                    -- 餐飲方案外鍵 (來自 ERD, 可選)
-    CheckInDate DATE NOT NULL,              -- 入住日期 (來自 ERD)
-    CheckOutDate DATE NOT NULL,             -- 退房日期 (來自 ERD)
-    FinalPrice DECIMAL(10, 2) NOT NULL CHECK (FinalPrice >= 0), -- 最終價格 (來自 ERD, 根據房型、季節、方案等計算得出)
-    BookingStatus VARCHAR(20) NOT NULL DEFAULT 'Confirmed', -- 預訂狀態 (ERD 未顯示，但實務上必要，例如: 'Confirmed', 'CheckedIn', 'CheckedOut', 'Cancelled')
-    BookingTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 預訂時間 (ERD 未顯示，保留用於追蹤)
-    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID), -- 關聯到顧客表
-    FOREIGN KEY (RoomID) REFERENCES Room(RoomID),          -- 關聯到房間表
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID), -- 關聯到員工表
-    FOREIGN KEY (MealPlanID) REFERENCES MealPlan(MealPlanID), -- 關聯到餐飲方案表
-    CONSTRAINT chk_booking_dates CHECK (CheckOutDate > CheckInDate) -- 檢查退房日需晚於入住日
-);
-
--- ==================================================
--- 輔助/日誌記錄表 (由需求或關係推斷)
--- 這些表可能對於完整功能是必要的，但在提供的 ER 圖中未明確作為獨立實體繪製
--- ==================================================
-
--- 清潔日誌表 (由 'Clean' 關係推斷)
-CREATE TABLE CleaningLog (
-    LogID INT AUTO_INCREMENT PRIMARY KEY,
-    RoomID INT NOT NULL,                    -- 房間外鍵
-    EmployeeID INT NULL,                    -- 清潔人員外鍵
-    Status VARCHAR(20) NOT NULL DEFAULT 'Pending', -- 狀態 (例如: 'Pending', 'InProgress', 'Completed')
-    RequestedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 要求清潔時間
-    CompletedAt TIMESTAMP NULL,             -- 完成清潔時間
-    Notes TEXT,                             -- 備註
-    FOREIGN KEY (RoomID) REFERENCES Room(RoomID), -- 關聯到房間表
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID) -- 關聯到員工表
-);
-
--- 維修日誌表 (由 RoomStatus='Maintenance' 推斷)
-CREATE TABLE MaintenanceLog (
-    LogID INT AUTO_INCREMENT PRIMARY KEY,
-    RoomID INT NOT NULL,                    -- 房間外鍵
-    ReportedByEmployeeID INT NULL,          -- 回報人員外鍵
-    AssignedToEmployeeID INT NULL,          -- 維修人員外鍵
-    IssueDescription TEXT NOT NULL,         -- 問題描述
-    Status VARCHAR(20) NOT NULL DEFAULT 'Reported', -- 狀態 (例如: 'Reported', 'InProgress', 'Completed')
-    ReportedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 回報時間
-    CompletedAt TIMESTAMP NULL,             -- 完成時間
-    Notes TEXT,                             -- 備註
-    FOREIGN KEY (RoomID) REFERENCES Room(RoomID), -- 關聯到房間表
-    FOREIGN KEY (ReportedByEmployeeID) REFERENCES Employee(EmployeeID), -- 關聯到回報員工
-    FOREIGN KEY (AssignedToEmployeeID) REFERENCES Employee(EmployeeID) -- 關聯到維修員工
-);
-
--- ==================================================
--- 餐廳銷售點 (POS) 相關表 (ERD 未包含，但餐廳模組可能需要)
--- ==================================================
-
--- 餐廳訂單表 (用於獨立的餐廳點餐)
-CREATE TABLE RestaurantOrder (
-    OrderID INT AUTO_INCREMENT PRIMARY KEY,
-    RestaurantID INT NOT NULL,              -- 發生訂單的餐廳外鍵
-    CustomerID INT NULL,                    -- 顧客外鍵 (如果是住客)
-    BookingID INT NULL,                     -- 預訂外鍵 (如果掛房帳)
-    TableNumber VARCHAR(10),                -- 桌號
-    OrderTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 下單時間
-    TotalAmount DECIMAL(10, 2) DEFAULT 0.00, -- 總金額
-    OrderStatus VARCHAR(20) NOT NULL DEFAULT 'Pending', -- 訂單狀態 (例如: 'Pending', 'Preparing', 'Served', 'Paid')
-    EmployeeID INT NULL,                    -- 點餐/服務員工外鍵
-    PaymentMethod VARCHAR(50),              -- 付款方式
-    PaymentTime TIMESTAMP NULL,             -- 付款時間
-    FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID), -- 關聯到餐廳表
-    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),       -- 關聯到顧客表
-    FOREIGN KEY (BookingID) REFERENCES Booking(BookingID),          -- 關聯到預訂表
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)        -- 關聯到員工表
-);
-
--- 餐廳訂單明細表 (記錄訂單中的每個項目)
-CREATE TABLE RestaurantOrderItem (
-    OrderItemID INT AUTO_INCREMENT PRIMARY KEY,
-    OrderID INT NOT NULL,                   -- 訂單主檔外鍵
-    MenuItemID INT NOT NULL,                -- 菜單項目外鍵
-    Quantity INT NOT NULL CHECK (Quantity > 0), -- 數量
-    UnitPrice DECIMAL(10, 2) NOT NULL,      -- 下單時的單價
-    ItemStatus VARCHAR(20) NOT NULL DEFAULT 'Ordered', -- 項目狀態 (例如: 'Ordered', 'Preparing', 'Served')
-    Notes TEXT,                             -- 特殊要求 (例如: '去冰', '不加洋蔥')
-    FOREIGN KEY (OrderID) REFERENCES RestaurantOrder(OrderID) ON DELETE CASCADE, -- 關聯到訂單主檔 (主檔刪除時明細也刪除)
-    FOREIGN KEY (MenuItemID) REFERENCES MenuItem(MenuItemID)     -- 關聯到菜單項目表
+    CustomerID INT,
+    RoomID INT,
+    MealPlanID INT,
+    EmployeeID INT,
+    CheckInDate DATE,
+    CheckOutDate DATE,
+    FinalPrice DECIMAL(10, 2),
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
+    FOREIGN KEY (RoomID) REFERENCES Room(RoomID),
+    FOREIGN KEY (MealPlanID) REFERENCES Meal_Plan(MealPlanID),
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
 );
 ```
 
 ## SQL 範例資料
 ```SQL
--- 新增一家餐廳
 INSERT INTO Restaurant (Name, DayOfWeek, OpenTime, CloseTime) VALUES
 ('雲苑廳', '每日', '07:00:00', '22:00:00');
 
--- 新增員工 (假設 RestaurantID 1 存在)
-INSERT INTO Employee (RestaurantID, Username, PasswordHash, Name, Position, Department, HireDate, Phone, IsActive) VALUES
-(1, 'manager01', '雜湊後的密碼1', '羅文鍵', '餐廳經理', '餐飲部', '2023-08-01', '0912000111', TRUE),
-(NULL, 'frontdesk01', '雜湊後的密碼2', '陳彥福', '前台接待員', '客房部', '2024-01-15', '0911111111', TRUE);
+INSERT INTO Room_Type (Name, BedCount) VALUES
+('標準大床房', 1),
+('豪華雙床房', 2);
 
--- 新增房型
-INSERT INTO RoomType (Name, BedCount, Description) VALUES
-('標準大床房', 1, '舒適的房間，配備一張特大雙人床'),
-('豪華雙床房', 2, '寬敞的房間，配備兩張單人床，享市景');
-
--- 新增房間 (假設 RoomTypeIDs 1 和 2 存在)
-INSERT INTO Room (RoomNumber, RoomTypeID, RoomStatus, BasePrice, Floor) VALUES
-('101', 1, 'Available', 2500.00, 1),
-('205', 2, 'Available', 3800.00, 2);
-
--- 新增季節
 INSERT INTO Season (Name, StartDate, EndDate, PriceAdjustmentPercent) VALUES
-('旺季', '2025-06-01', '2025-08-31', 15.00), -- +15%
-('淡季', '2025-09-01', '2025-11-30', -10.00); -- -10%
+('旺季', '2025-06-01', '2025-08-31', 15.00),
+('淡季', '2025-09-01', '2025-11-30', -10.00);
 
--- 新增房間季節價格 (假設 RoomTypeIDs 1, 2 和 SeasonIDs 1, 2 存在)
-INSERT INTO RoomSeasonRate (RoomTypeID, SeasonID, AdjustedPrice) VALUES
-(1, 1, 2875.00), -- 標準大床房於旺季價格 (2500 * 1.15)
-(1, 2, 2250.00), -- 標準大床房於淡季價格 (2500 * 0.90)
-(2, 1, 4370.00), -- 豪華雙床房於旺季價格 (3800 * 1.15)
-(2, 2, 3420.00); -- 豪華雙床房於淡季價格 (3800 * 0.90)
-
--- 新增餐飲方案
-INSERT INTO MealPlan (Name, ExtraCharge) VALUES
+INSERT INTO Meal_Plan (Name, ExtraCharge) VALUES
 ('僅住房', 0.00),
 ('自助早餐', 350.00);
 
--- 新增菜單項目 (假設 RestaurantID 1 存在)
-INSERT INTO MenuItem (RestaurantID, Name, Category, Price, IsAvailable) VALUES
-(1, '柳橙汁', '飲品', 80.00, TRUE),
-(1, '可頌麵包', '烘焙坊', 60.00, TRUE),
-(1, '美式炒蛋', '早餐熱食', 150.00, TRUE);
-
--- 將菜單項目連結到餐飲方案 (假設 MealPlanID 2 = 自助早餐, MenuItemIDs 1,2,3 存在)
-INSERT INTO MealPlanMenu (MealPlanID, MenuItemID) VALUES
-(2, 1), -- 柳橙汁 包含在 自助早餐 方案
-(2, 2), -- 可頌麵包 包含在 自助早餐 方案
-(2, 3); -- 美式炒蛋 包含在 自助早餐 方案
-
--- 新增顧客
 INSERT INTO Customer (Name, Phone, Email) VALUES
-('楊祐宇', '0912345678', 'yuyu.yang@email.com');
+('楊祐宇', '0912345678', 'yuyu.yang@email.com'),
+('黃子峻', '0922333444', 'tj.huang@email.com');
 
--- 新增預訂 (假設 CustomerID 1, RoomID 2 (豪華雙床房), EmployeeID 2 (前台), MealPlanID 2 (早餐) 存在)
--- 預訂期間為旺季 (6月10-12日)，價格應反映 RoomSeasonRate + MealPlan 費用
--- 這裡需要應用程式邏輯計算 FinalPrice。假設計算結果如下：
--- 調整後房價 = 4370.00。餐飲方案 = 350.00/晚。共 2 晚。總價 = (4370.00 + 350.00) * 2 = 9440.00
-INSERT INTO Booking (CustomerID, RoomID, EmployeeID, MealPlanID, CheckInDate, CheckOutDate, FinalPrice, BookingStatus) VALUES
-(1, 2, 2, 2, '2025-06-10', '2025-06-12', 9440.00, 'Confirmed');
+INSERT INTO Employee (RestaurantID, Name, Position, Department, HireDate, Phone, IsActive) VALUES
+(1, '羅文鍵', '餐廳經理', '餐飲部', '2023-08-01', '0912000111', TRUE),
+(NULL, '陳彥福', '前台接待員', '客房部', '2024-01-15', '0911111111', TRUE);
+
+INSERT INTO Room (RoomTypeID, RoomNumber, RoomStatus, BasePrice) VALUES
+(1, '101', 'Available', 2500.00),
+(2, '205', 'Available', 3800.00),
+(1, '102', 'Maintenance', 2600.00);
+
+INSERT INTO Menu_Item (RestaurantID, Name, Category, Price) VALUES
+(1, '柳橙汁', '飲品', 80.00),
+(1, '可頌麵包', '烘焙坊', 60.00),
+(1, '美式炒蛋', '早餐熱食', 150.00),
+(1, '總匯三明治', '輕食', 220.00);
+
+INSERT INTO Room_Season_Rate (RoomTypeID, SeasonID, AdjustedPrice) VALUES
+(1, 1, 2875.00),
+(1, 2, 2250.00),
+(2, 1, 4370.00),
+(2, 2, 3420.00);
+
+INSERT INTO Meal_Plan_Menu (MealPlanID, MenuItemID) VALUES
+(2, 1),
+(2, 2),
+(2, 3);
+
+INSERT INTO Booking (CustomerID, RoomID, MealPlanID, EmployeeID, CheckInDate, CheckOutDate, FinalPrice) VALUES
+(1, 2, 2, 2, '2025-06-10', '2025-06-12', 9440.00),
+(2, 1, 1, 2, '2025-07-01', '2025-07-03', 5750.00);
 ```
 
 ## 待辦事項
