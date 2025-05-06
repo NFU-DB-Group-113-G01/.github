@@ -112,58 +112,61 @@
 ```SQL
 CREATE TABLE Restaurant (
     RestaurantID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(255),
-    DayOfWeek VARCHAR(50),
-    OpenTime TIME,
-    CloseTime TIME
+    Name VARCHAR(255) NOT NULL,
+    DayOfWeek VARCHAR(50) NOT NULL,
+    OpenTime TIME NOT NULL,
+    CloseTime TIME NOT NULL,
+    CHECK (OpenTime < CloseTime)
 );
 
 CREATE TABLE Employee (
     EmployeeID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(255),
-    Position VARCHAR(100),
-    Department VARCHAR(100),
-    HireDate DATE,
-    Phone VARCHAR(50),
-    IsActive BOOLEAN,
+    Name VARCHAR(255) NOT NULL,
+    Position VARCHAR(100) NOT NULL,
+    Department VARCHAR(100) NOT NULL,
+    HireDate DATE NOT NULL,
+    Phone VARCHAR(50) NOT NULL,
+    IsActive BOOLEAN NOT NULL,
     RestaurantID INT,
-    FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID)
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID) ON DELETE SET NULL
 );
 
 CREATE TABLE Customer (
     CustomerID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(255),
-    Phone VARCHAR(50),
-    Email VARCHAR(255)
+    Name VARCHAR(255) NOT NULL,
+    Phone VARCHAR(50) NOT NULL,
+    Email VARCHAR(255) NOT NULL UNIQUE
 );
 
 CREATE TABLE Room_Type (
     RoomTypeID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100),
-    BedCount INT
+    Name VARCHAR(100) NOT NULL,
+    BedCount INT NOT NULL CHECK (BedCount > 0)
 );
 
 CREATE TABLE Room (
     RoomID INT AUTO_INCREMENT PRIMARY KEY,
-    RoomTypeID INT,
-    RoomNumber VARCHAR(50),
-    RoomStatus VARCHAR(50),
-    BasePrice DECIMAL(10, 2),
+    RoomTypeID INT NOT NULL,
+    RoomNumber VARCHAR(50) NOT NULL UNIQUE,
+    RoomStatus VARCHAR(50) NOT NULL,
+    BasePrice DECIMAL(10, 2) NOT NULL CHECK (BasePrice >= 0),
     FOREIGN KEY (RoomTypeID) REFERENCES Room_Type(RoomTypeID)
 );
 
 CREATE TABLE Season (
     SeasonID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100),
-    StartDate DATE,
-    EndDate DATE,
-    PriceAdjustmentPercent DECIMAL(5, 2)
+    Name VARCHAR(100) NOT NULL,
+    StartDate DATE NOT NULL,
+    EndDate DATE NOT NULL,
+    PriceAdjustmentPercent DECIMAL(5, 2) NOT NULL,
+    CHECK (StartDate < EndDate),
+    CHECK (PriceAdjustmentPercent >= 0)
 );
 
 CREATE TABLE Room_Season_Rate (
-    RoomTypeID INT,
-    SeasonID INT,
-    AdjustedPrice DECIMAL(10, 2),
+    RoomTypeID INT NOT NULL,
+    SeasonID INT NOT NULL,
+    AdjustedPrice DECIMAL(10, 2) NOT NULL CHECK (AdjustedPrice >= 0),
     PRIMARY KEY (RoomTypeID, SeasonID),
     FOREIGN KEY (RoomTypeID) REFERENCES Room_Type(RoomTypeID),
     FOREIGN KEY (SeasonID) REFERENCES Season(SeasonID)
@@ -171,36 +174,37 @@ CREATE TABLE Room_Season_Rate (
 
 CREATE TABLE Meal_Plan (
     MealPlanID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100),
-    ExtraCharge DECIMAL(10, 2)
+    Name VARCHAR(100) NOT NULL,
+    ExtraCharge DECIMAL(10, 2) NOT NULL CHECK (ExtraCharge >= 0)
 );
 
 CREATE TABLE Menu_Item (
     MenuItemID INT AUTO_INCREMENT PRIMARY KEY,
-    RestaurantID INT,
-    Name VARCHAR(100),
-    Category VARCHAR(100),
-    Price DECIMAL(10, 2),
+    RestaurantID INT NOT NULL,
+    Name VARCHAR(100) NOT NULL,
+    Category VARCHAR(100) NOT NULL,
+    Price DECIMAL(10, 2) NOT NULL CHECK (Price >= 0),
     FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID)
 );
 
 CREATE TABLE Meal_Plan_Menu (
     MealPlanMenuID INT AUTO_INCREMENT PRIMARY KEY,
-    MealPlanID INT,
-    MenuItemID INT,
+    MealPlanID INT NOT NULL,
+    MenuItemID INT NOT NULL,
     FOREIGN KEY (MealPlanID) REFERENCES Meal_Plan(MealPlanID),
     FOREIGN KEY (MenuItemID) REFERENCES Menu_Item(MenuItemID)
 );
 
 CREATE TABLE Booking (
     BookingID INT AUTO_INCREMENT PRIMARY KEY,
-    CustomerID INT,
-    RoomID INT,
-    MealPlanID INT,
-    EmployeeID INT,
-    CheckInDate DATE,
-    CheckOutDate DATE,
-    FinalPrice DECIMAL(10, 2),
+    CustomerID INT NOT NULL,
+    RoomID INT NOT NULL,
+    MealPlanID INT NOT NULL,
+    EmployeeID INT NOT NULL,
+    CheckInDate DATE NOT NULL,
+    CheckOutDate DATE NOT NULL,
+    FinalPrice DECIMAL(10, 2) NOT NULL CHECK (FinalPrice >= 0),
+    CHECK (CheckOutDate > CheckInDate),
     FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
     FOREIGN KEY (RoomID) REFERENCES Room(RoomID),
     FOREIGN KEY (MealPlanID) REFERENCES Meal_Plan(MealPlanID),
