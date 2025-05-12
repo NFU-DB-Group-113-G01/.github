@@ -218,19 +218,19 @@ INSERT INTO Restaurant (Name, DayOfWeek, OpenTime, CloseTime) VALUES
 ('雲苑廳', '每日', '07:00:00', '22:00:00');
 
 INSERT INTO Room_Type (Name, BedCount) VALUES
-('單人房', 1),        // RoomTypeID 1
-('單床雙人房', 1),    // RoomTypeID 2
-('雙床雙人房', 2);    // RoomTypeID 3
-('雙床三人房', 2);    // RoomTypeID 4
-('標準三人房', 3);    // RoomTypeID 5
-('雙床四人房', 2);    // RoomTypeID 6
-('四床四人房', 4);    // RoomTypeID 7
+('單人房', 1),        -- RoomTypeID 1
+('單床雙人房', 1),    -- RoomTypeID 2
+('雙床雙人房', 2);    -- RoomTypeID 3
+('雙床三人房', 2);    -- RoomTypeID 4
+('標準三人房', 3);    -- RoomTypeID 5
+('雙床四人房', 2);    -- RoomTypeID 6
+('四床四人房', 4);    -- RoomTypeID 7
 
 INSERT INTO Season (Name, StartDate, EndDate, PriceAdjustmentPercent) VALUES
-('旺季(暑假)', '2025-06-01', '2025-08-31', 100.00),    // SeasonID 1
-('旺季(寒假)', '2025-01-01', '2025-03-31', 100.00),    // SeasonID 2
-('平時', '2025-09-01', '2025-12-31', 0.00),          // SeasonID 3
-('淡季', '2025-04-01', '2025-05-31', -20.00);          // SeasonID 4
+('旺季(暑假)', '2025-06-01', '2025-08-31', 100.00),    -- SeasonID 1
+('旺季(寒假)', '2025-01-01', '2025-03-31', 100.00),    -- SeasonID 2
+('平時', '2025-09-01', '2025-12-31', 0.00),            -- SeasonID 3
+('淡季', '2025-04-01', '2025-05-31', -20.00);          -- SeasonID 4
 
 INSERT INTO Meal_Plan (Name, ExtraCharge) VALUES
 ('僅住房', 0.00),
