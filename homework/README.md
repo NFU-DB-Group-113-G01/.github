@@ -42,9 +42,9 @@
 ## 🧾 客戶資料表（Customer）
 
 | customerNo | customerName | customerStreet   | customerCity | customerState | customerZipCode | custTelNo   | custFaxNo  | DOB        | maritalStatus | creditRating |
-|------------|--------------|------------------|--------------|----------------|------------------|-------------|------------|-------------|----------------|----------------|
-| C001       | 陳彥福       | 中山北路100號    | 台北市       | 台北市         | 104              | 02-12345678 | 02-12345679 | 1985-03-21 | 單身           | A              |
-| C002       | 羅文鍵       | 忠孝東路200號    | 新北市       | 新北市         | 220              | 02-87654321 | 02-87654322 | 1990-07-11 | 已婚           | B              |
+|------------|--------------|------------------|--------------|---------------|-----------------|-------------|------------|------------|---------------|--------------|
+| C001       | 陳彥福       | 中山北路100號    | 新北市       | 新北市         | 104              | 02-12345678 | 02-12345679 | 1985-03-21 | 已婚           | A              |
+| C002       | 羅文鍵       | 忠孝東路200號    | 雲林縣       | 雲林縣         | 220              | 02-87654321 | 02-87654322 | 1990-07-11 | 單身           | B              |
 
 ---
 
@@ -52,8 +52,8 @@
 
 | employeeNo | title | firstName | lastName | address          | workTelExt | homeTelNo  | empEmailAddress     | socialSecurityNumber | DOB        | position   | sex | salary | dateStarted |
 |------------|-------|-----------|----------|------------------|------------|-------------|----------------------|------------------------|-------------|-------------|------|--------|--------------|
-| E001       | Mr.   | 子峻      | 黃       | 新店區民權路50號 | 301        | 02-29887766 | huang@example.com   | P123456789           | 1980-10-10 | Sales Rep | M    | 55000  | 2015-01-01   |
-| E002       | Mr.   | 祐宇      | 楊       | 板橋區文化路120號 | 302        | 02-22776655 | yang@example.com    | F135678945           | 1988-05-23 | Manager   | M    | 70000  | 2017-08-15   |
+| E001       | Mr.   | 子峻      | 黃       | 新北市新店區民權路50號  | 301        | 02-29887766 | huang@example.com   | P123456789           | 1980-10-10 | Sales Rep | M    | 55000  | 2015-01-01   |
+| E002       | Mr.   | 祐宇      | 楊       | 新北市板橋區文化路120號 | 302        | 02-22776655 | yang@example.com    | F135678945           | 1988-05-23 | Manager   | M    | 70000  | 2017-08-15   |
 
 ---
 
@@ -71,7 +71,7 @@
 | invoiceNo | dateRaised | datePaid  | creditCardNo     | holdersName | expiryDate | orderNo | pMethodNo |
 |-----------|-------------|-------------|----------------------|--------------|--------------|----------|------------|
 | INV5001   | 2025-05-10  | 2025-05-12  | 1234-5678-9876-5432 | 陳彥福       | 2027-08     | O1001   | PM001     |
-| INV5002   | 2025-05-11  | 2025-05-13  | 1111-2222-3333-4444 | 羅文鍵       | 2026-05     | O1002   | PM002     |
+| INV5002   | 2025-05-11  | 2025-05-13  | (N/A)               | 羅文鍵       | 2026-05     | O1002   | PM002     |
 
 ---
 
@@ -99,7 +99,7 @@
 | pMethodNo | paymentMethod |
 |-----------|------------------|
 | PM001     | 信用卡             |
-| PM002     | 現金               |
+| PM002     | 貨到付款           |
 
 ---
 
@@ -160,8 +160,8 @@
 ## Employee 員工資料表
 | employeeNo | title | firstName | middleName | lastName | address       | workTelExt | homeTelNo  | empEmailAddress                                   | socialSecurityNumber | DOB        | position | sex | salary | dateStarted |
 | ---------- | ----- | --------- | ---------- | -------- | ------------- | ---------- | ---------- | ------------------------------------------------- | -------------------- | ---------- | -------- | --- | ------ | ----------- |
-| E001       | Mr    | 彥福        |            | 陳        | 台北市信義區松仁路100號 | 1234       | 0223456789 | [yf.chen@company.com](mailto:yf.chen@company.com) | A123456789           | 1985-05-13 | 採購主管     | M   | 60000  | 2015-03-01  |
-| E002       | Ms    | 文鍵        |            | 羅        | 新北市板橋區中山路200號 | 1235       | 0223456790 | [wj.luo@company.com](mailto:wj.luo@company.com)   | B234567890           | 1990-08-20 | 倉儲助理     | F   | 42000  | 2019-06-15  |
+| E001       | Mr    | 彥福        |            | 陳        | 台北市信義區松仁路100號 | 1234       | 0223456789 | yf.chen@company.com | A123456789           | 1985-05-13 | 採購主管     | M   | 60000  | 2015-03-01  |
+| E002       | Ms    | 文鍵        |            | 羅        | 新北市板橋區中山路200號 | 1235       | 0223456790 | wj.luo@company.com   | B234567890           | 1990-08-20 | 倉儲助理     | F   | 42000  | 2019-06-15  |
 
 ## Product 商品資料表
 | productNo | productName | serialNo | unitPrice | quantityOnHand | reorderLevel | reorderQuantity | reorderLeadTime | categoryNo |
@@ -176,10 +176,10 @@
 | C02        | 醫療器材                |
 
 ## Supplier 供應商資料表
-| supplierNo | supplierName | supplierStreet | supplierCity | supplierState | supplierZipCode | suppTelNo  | suppFaxNo  | suppEmailAddress                                    | suppWebAddress                                  | contactName | contactTelNo | contactFaxNo | contactEmailAddress                                             | paymentTerms |
-| ---------- | ------------ | -------------- | ------------ | ------------- | --------------- | ---------- | ---------- | --------------------------------------------------- | ----------------------------------------------- | ----------- | ------------ | ------------ | --------------------------------------------------------------- | ------------ |
-| S001       | 台灣電子公司       | 南京東路三段100號     | 台北市          | 台灣            | 104             | 0223451111 | 0223452222 | [sales@taiwanelec.com](mailto:sales@taiwanelec.com) | [www.taiwanelec.com](http://www.taiwanelec.com) | 林明志         | 0912123456   | 0223452222   | [mingchi.lin@taiwanelec.com](mailto:mingchi.lin@taiwanelec.com) | 月結30天        |
-| S002       | 安康醫材行        | 忠孝西路一段45號      | 台中市          | 台灣            | 402             | 0423456789 | 0423456790 | [info@ankangmed.com](mailto:info@ankangmed.com)     | [www.ankangmed.com](http://www.ankangmed.com)   | 張惠雯         | 0933555666   | 0423456790   | [huiwen.chang@ankangmed.com](mailto:huiwen.chang@ankangmed.com) | 現金           |
+| supplierNo | supplierName | supplierStreet | supplierCity | supplierState | supplierZipCode | suppTelNo  | suppFaxNo  | suppEmailAddress | suppWebAddress | contactName | contactTelNo | contactFaxNo | contactEmailAddress | paymentTerms |
+| ---------- | ------------ | -------------- | ------------ | ------------- | --------------- | ---------- | ---------- | ----------------- | ------------- | ----------- | ------------ | ------------ | ------------------- | ------------ |
+| S001  | 台灣電子公司  | 南京東路三段100號  | 台北市  | 台灣  | 104  | 0223451111 | 0223452222 | sales@taiwanelec.com  | www.taiwanelec.com  | 林明志  | 0912123456   | 0223452222   | ingchi.lin@taiwanelec.com | 月結30天  |
+| S002  | 安康醫材行    | 忠孝西路一段45號   | 台中市  | 台灣  | 402  | 0423456789 | 0423456790 | info@ankangmed.com    | www.ankangmed.com   | 張惠雯  | 0933555666   | 0423456790   | huiwen.chang@ankangmed.com | 現金     |
 
 ## PurchaseOrder 採購單資料表
 | purchaseOrderNo | purchaseOrderDescription | orderDate  | dateRequired | shippedDate | freightCharge | supplierNo | employeeNo |
