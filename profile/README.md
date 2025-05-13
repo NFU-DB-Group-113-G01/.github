@@ -286,6 +286,9 @@ INSERT INTO Booking (CustomerID, RoomID, MealPlanID, EmployeeID, CheckInDate, Ch
 6. Season 表示季節 可依時段調整房型價格
 7. 前台人員可透過介面調整與得知訂房資訊
 
+## Homework 📖
+- [20250507](https://github.com/NFU-DB-Group-113-G01/.github/blob/main/homework/README.md)
+
 
 ## 待辦事項
  - [x] 新增成員
