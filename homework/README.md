@@ -122,39 +122,3 @@
 
 # Inventory Control（庫存控制系統）
 ![Example2](https://github.com/user-attachments/assets/402ea277-bde4-4a2e-858d-7cd3d6894eb4)
-## ProductCategory（產品分類表）
-| CategoryID | CategoryName |
-|------------|--------------|
-| C001       | 電子元件     |
-| C002       | 辦公用品     |
-
-## Product（產品表）
-| ProductID | ProductName  | SupplierPart# | UnitCost | QuantityOnHand | ReorderPoint | TargetLevel | LeadTime | CategoryID |
-|-----------|--------------|----------------|----------|----------------|---------------|--------------|----------|-------------|
-| P001      | 電阻 10KΩ     | S1001           | 0.1      | 1000           | 200           | 500          | 3 days   | C001        |
-| P002      | A4 影印紙     | S2002           | 3.5      | 300            | 100           | 200          | 5 days   | C002        |
-
-## Supplier（供應商）
-| SupplierID | SupplierName       | Address        | City   | Country | Zip | Phone        | Email              | ContactPerson | PaymentTerms |
-|------------|--------------------|----------------|--------|---------|-----|---------------|---------------------|----------------|----------------|
-| S001       | 電子通股份有限公司 | 科技路一段88號 | 台北市 | 台灣    | 100 | 02-12345678   | contact@eleco.com  | 羅文鍵         | Net 30         |
-| S002       | 文具王企業社       | 文具街77巷3號  | 台中市 | 台灣    | 403 | 04-87654321   | sales@officepro.tw | 黃子峻         | Net 15         |
-
-## Employee（員工）
-| EmployeeID | Name   |
-|------------|--------|
-| E001       | 陳彥福 |
-| E002       | 楊祐宇 |
-
-## PurchaseOrder（採購單）
-| PO_ID  | Description    | OrderDate   | ExpectedDate | ReceivedDate | Tax | SupplierID | EmployeeID |
-|--------|----------------|-------------|--------------|---------------|-----|-------------|-------------|
-| PO001  | 電阻補貨單     | 2025-04-01  | 2025-04-05   | 2025-04-04    | 50  | S001       | E001        |
-| PO002  | 影印紙採購     | 2025-04-03  | 2025-04-08   | 2025-04-07    | 30  | S002       | E002        |
-
-## Transaction（庫存交易紀錄）
-| TransID | Date       | Description      | Cost | QuantityReceived | QtyOnHand | QtyUsed | QtyScrapped | ProductID | PO_ID  |
-|---------|------------|------------------|------|------------------|-----------|----------|--------------|-----------|--------|
-| T001    | 2025-04-04 | 收到電阻貨品     | 0.1  | 500              | 500       | 0        | 0            | P001      | PO001  |
-| T002    | 2025-04-06 | 生產用掉電阻     | 0.1  | 0                | 0         | 100      | 5            | P001      | PO001  |
-| T003    | 2025-04-07 | 收到影印紙       | 3.5  | 200              | 200       | 0        | 0            | P002      | PO002  |
