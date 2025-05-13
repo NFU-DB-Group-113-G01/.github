@@ -1,4 +1,5 @@
 # Customer Order Entry（客戶訂單系統）
+![Example1](https://github.com/user-attachments/assets/e08f9b89-7feb-424e-8ea1-8f4c8167cdd3)
 ## Customer（客戶）
 | CustomerID | CustomerName       | Street   | City   | Country | Zip | Phone      | Fax        | SinceDate | CreditRating |
 |------------|--------------------|----------|--------|---------|-----|-------------|-------------|------------|----------------|
@@ -41,6 +42,7 @@
 | SM02              | 超商取貨     |
 
 # Inventory Control（庫存控制系統）
+![Example2](https://github.com/user-attachments/assets/402ea277-bde4-4a2e-858d-7cd3d6894eb4)
 ## ProductCategory（產品分類表）
 | CategoryID | CategoryName |
 |------------|--------------|
