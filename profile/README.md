@@ -321,6 +321,7 @@ INSERT INTO Booking (CustomerID, RoomID, MealPlanID, EmployeeID, CheckInDate, Ch
  - [x] 完整性限制
  - [x] ER Diagram及詳細說明
  - [x] 資料庫Schema
+ - [ ] 新增目錄
 
 
 ## 🔗 Link
