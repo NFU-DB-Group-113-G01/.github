@@ -103,6 +103,29 @@
 | Room_Season_Rate | 	RoomTypeID | 	Room_Type | 	價格調整所適用的房型必須是已存在的房型 |
 | Room_Season_Rate | 	SeasonID | 	    Season | 	    價格調整所適用的季節必須是已存在的季節定義 |
 
+### 資料型態限制（Domain Constraints）
+
+| 欄位 | 資料型態 | 限制與說明 |
+|------|-----------|------------|
+| CustomerID, RoomID 等           | int           | 整數，主鍵必須為正整數且唯一 |
+| Name, RoomType 等               | varchar(n)    | 字元長度上限（例如 varchar(50)） |
+| Phone                           | varchar(15)   | 最多 15 字元，建議符合電話格式 |
+| Email                           | varchar(100)  | 建議符合 Email 格式 |
+| 價格欄位如 BasePrice、FinalPrice | decimal(10,2) | 最大值 99999999.99，應為非負 |
+| PriceAdjustmentPercent          | decimal(5,2)  | 例：20 表示 +20% |
+| CheckInDate, CheckOutDate 等    | date          | 必須符合日期格式 yyyy/mm/dd |
+
+### 業務邏輯完整性（Business Rules）
+
+| 條件 | 限制說明 |
+|------|----------|
+| CheckOutDate > CheckInDate | 退房日需晚於入住日 |
+| FinalPrice ≥ BasePrice     | 最終價格應包含基本價格與其他費用 |
+| ROOM.RoomStatus            | 限定值如：空房、已預訂、維修中 |
+| ROOM.RoomCleanStatus       | 限定值如：待清潔、清潔中、已完成 |
+| SEASON.StartDate < EndDate | 季節開始日需早於結束日 |
+| MEAL_PLAN_MENU 組合唯一     | 一道菜不能重複在同一方案中出現 |
+| ROOM_SEASON_RATE 組合唯一   | 同一房型與季節不能重複設定價格 |
 
 ## ER Diagram
 ### 圖片（點擊圖片🖼️並搭配鍵盤Ctrl⌨️與滑鼠滾輪🖱️可放大檢視圖片🔎）
