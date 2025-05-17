@@ -271,8 +271,7 @@ CREATE TABLE Season (
     StartDate DATE NOT NULL,
     EndDate DATE NOT NULL,
     PriceAdjustmentPercent DECIMAL(5, 2) NOT NULL,
-    CHECK (StartDate < EndDate),
-    CHECK (PriceAdjustmentPercent >= 0)
+    CHECK (StartDate <= EndDate),
 );
 
 CREATE TABLE Room_Season_Rate (
