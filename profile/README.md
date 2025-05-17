@@ -260,9 +260,9 @@ CREATE TABLE Room_Type (
 CREATE TABLE Room (
     RoomID INT AUTO_INCREMENT PRIMARY KEY,
     RoomTypeID INT NOT NULL,
-    RoomNumber VARCHAR(50) NOT NULL UNIQUE,
-    RoomStatus VARCHAR(50) NOT NULL,
-    FOREIGN KEY (RoomTypeID) REFERENCES Room_Type(RoomTypeID),
+    RoomNumber VARCHAR(10) NOT NULL,
+    RoomStatus ENUM('Available', 'Maintenance', 'Cleaning') DEFAULT 'Available',
+    FOREIGN KEY (RoomTypeID) REFERENCES Room_Type(RoomTypeID)
 );
 
 CREATE TABLE Season (
@@ -421,17 +421,17 @@ INSERT INTO Employee (RestaurantID, Name, Position, Department, HireDate, Phone,
 (9, '王心凌', '餐廳服務員', '餐飲部', '2023-07-01', '0922333445', TRUE);
 
 -- Room
-INSERT INTO Room (RoomTypeID, RoomNumber, RoomStatus, BasePrice) VALUES
-(1, '101', 'Available', 2500.00),
-(2, '205', 'Available', 3800.00),
-(1, '102', 'Maintenance', 2600.00),
-(3, '301', 'Available', 4200.00),
-(4, '402', 'Booked', 5000.00),
-(5, '503', 'Available', 6000.00),
-(6, '604', 'Booked', 7000.00),
-(7, '705', 'Available', 8000.00),
-(8, '801', 'Available', 3500.00),
-(9, '902', 'Maintenance', 4000.00);
+INSERT INTO Room (RoomTypeID, RoomNumber, RoomStatus) VALUES
+(1, '101', 'Available'),
+(2, '205', 'Available'),
+(1, '102', 'Maintenance'),
+(3, '301', 'Available'),
+(4, '402', 'Available'),
+(5, '503', 'Available'),
+(6, '604', 'Cleaning'),
+(7, '705', 'Available'),
+(8, '801', 'Available'),
+(9, '902', 'Maintenance');
 
 -- Menu_Item
 INSERT INTO Menu_Item (RestaurantID, Name, Category, Price) VALUES
