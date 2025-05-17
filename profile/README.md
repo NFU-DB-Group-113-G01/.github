@@ -321,8 +321,9 @@ CREATE TABLE Booking (
 );
 
 CREATE TABLE Restaurant_Employee (
-    EmployeeID INT PRIMARY KEY,  -- 一對一的關鍵：EmployeeID 是唯一主鍵
-    RestaurantID INT NOT NULL UNIQUE,  -- 確保一間餐廳也只分配給一個員工（若需要）
+    EmployeeID INT NOT NULL,
+    RestaurantID INT NOT NULL,
+    PRIMARY KEY (EmployeeID, RestaurantID), -- 組合主鍵，防止重複
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
     FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID)
 );
