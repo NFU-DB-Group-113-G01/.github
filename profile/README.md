@@ -233,6 +233,23 @@ CREATE TABLE Booking (
     FOREIGN KEY (MealPlanID) REFERENCES Meal_Plan(MealPlanID),
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
 );
+
+CREATE TABLE Restaurant_Employee (
+    EmployeeID INT PRIMARY KEY,
+    RestaurantID INT NOT NULL,
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID)
+);
+
+CREATE TABLE Room_Cleaning (
+    CleaningID INT AUTO_INCREMENT PRIMARY KEY,
+    EmployeeID INT NOT NULL,
+    RoomID INT NOT NULL,
+    CleaningDate DATETIME NOT NULL,
+    Notes TEXT,
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
+    FOREIGN KEY (RoomID) REFERENCES Room(RoomID)
+);
 ```
 
 ## SQL 範例資料
