@@ -1,4 +1,9 @@
 # 👋 Group G01
+
+> [!IMPORTANT]
+> 
+> - [Homework Common data models 2025/05/07](https://github.com/NFU-DB-Group-113-G01/.github/blob/main/homework/README.md)
+
 ## 👥 Members 成員
 | Student ID 學號 | Name 姓名 | Hobby 興趣 | Work 分工 | 
 |------------|---------------|---------------|--------|
@@ -308,9 +313,6 @@ INSERT INTO Booking (CustomerID, RoomID, MealPlanID, EmployeeID, CheckInDate, Ch
 5. Room_Type 表示各種房型 包括房型與床數
 6. Season 表示季節 可依時段調整房型價格
 7. 前台人員可透過介面調整與得知訂房資訊
-
-## Homework 📖
-- [20250507](https://github.com/NFU-DB-Group-113-G01/.github/blob/main/homework/README.md)
 
 
 ## 待辦事項
