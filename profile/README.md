@@ -129,7 +129,7 @@
 
 ## ER Diagram
 ### 圖片（點擊圖片🖼️並搭配鍵盤Ctrl⌨️與滑鼠滾輪🖱️可放大檢視圖片🔎）
-![ER Diagram](https://github.com/user-attachments/assets/8832f638-0d00-46dd-b787-3cc9ed9f9bc1)
+![ER Diagram](https://github.com/user-attachments/assets/4d21295d-714d-402e-95d3-bf9d6522eed1)
 
 ## SQL Schema
 ```SQL
