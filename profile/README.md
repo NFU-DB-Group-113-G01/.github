@@ -258,8 +258,7 @@ CREATE TABLE Room (
     RoomID INT AUTO_INCREMENT PRIMARY KEY,
     RoomTypeID INT NOT NULL,
     RoomNumber VARCHAR(10) NOT NULL,
-    RoomStatus ENUM('空房','已預訂','維修中') NOT NULL DEFAULT '空房',
-    RoomCleanStatus ENUM('待清潔','清潔中','已完成') NOT NULL DEFAULT '待清潔',
+    RoomStatus ENUM('待清潔','清潔中','正常','維修中') NOT NULL DEFAULT '正常',
     FOREIGN KEY (RoomTypeID) REFERENCES Room_Type(RoomTypeID)
 );
 
