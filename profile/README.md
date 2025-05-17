@@ -419,17 +419,17 @@ INSERT INTO Employee (Name, Position, Department, HireDate, Phone, IsActive) VAL
   ('王心凌','餐廳服務員','餐飲部','2023-07-01','0922333445',TRUE);
 
 -- Room
-INSERT INTO Room (RoomTypeID, RoomNumber, RoomStatus, RoomCleanStatus) VALUES
-  (1,'101','空房','待清潔'),
-  (2,'205','空房','待清潔'),
-  (1,'102','維修中','待清潔'),
-  (3,'301','空房','待清潔'),
-  (4,'402','空房','待清潔'),
-  (5,'503','空房','待清潔'),
-  (6,'604','清潔中','待清潔'),
-  (7,'705','空房','待清潔'),
-  (8,'801','空房','待清潔'),
-  (9,'902','維修中','待清潔');
+INSERT INTO Room (RoomTypeID, RoomNumber, RoomStatus) VALUES
+(1,'101','正常'),
+(2,'205','正常'),
+(1,'102','維修中'),
+(3,'301','正常'),
+(4,'402','待清潔'),
+(5,'503','正常'),
+(6,'604','清潔中'),
+(7,'705','正常'),
+(8,'801','正常'),
+(9,'902','維修中');
 
 -- Menu_Item
 INSERT INTO Menu_Item (RestaurantID, Name, Category, Price) VALUES
