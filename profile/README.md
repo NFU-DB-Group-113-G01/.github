@@ -219,7 +219,11 @@
 
 ## ER Diagram
 ### 圖片（點擊圖片🖼️並搭配鍵盤Ctrl⌨️與滑鼠滾輪🖱️可放大檢視圖片🔎）
+
 ![ER Diagram](https://github.com/user-attachments/assets/9dd74d55-57af-4e27-8675-3b21675f61e4)
+
+![ER Diagram black](https://github.com/user-attachments/assets/f124e2a7-7d3e-4a5d-b229-7fda369b4148)
+
 ## SQL Schema
 ```SQL
 CREATE TABLE Restaurant (
