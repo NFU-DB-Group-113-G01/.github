@@ -253,8 +253,8 @@ CREATE TABLE Customer (
 CREATE TABLE Room_Type (
     RoomTypeID INT AUTO_INCREMENT PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
-    BedCount INT NOT NULL CHECK (BedCount > 0)
-    BasePrice DECIMAL(10, 2) NOT NULL CHECK (BasePrice >= 0),
+    BedCount INT NOT NULL CHECK (BedCount > 0),
+    BasePrice DECIMAL(10, 2) NOT NULL CHECK (BasePrice >= 0)
 );
 
 CREATE TABLE Room (
@@ -262,9 +262,7 @@ CREATE TABLE Room (
     RoomTypeID INT NOT NULL,
     RoomNumber VARCHAR(50) NOT NULL UNIQUE,
     RoomStatus VARCHAR(50) NOT NULL,
-    BasePrice DECIMAL(10, 2) NOT NULL CHECK (BasePrice >= 0),
     FOREIGN KEY (RoomTypeID) REFERENCES Room_Type(RoomTypeID),
-    FOREIGN KEY (BasePrice) REFERENCES Room_Type(BasePrice)
 );
 
 CREATE TABLE Season (
