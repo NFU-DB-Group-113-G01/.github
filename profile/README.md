@@ -164,7 +164,7 @@
 
 | 欄位 | 資料型態 | 舉例與說明 |
 |------|-----------|------------|
-| RoomStatus (房間狀態)			        | 文字類型 (例如 'Available', 'Occupied', 'Cleaning')，應有一組預定義的值。	| 例子： "Available" (空房), "Occupied" (已入住), "Cleaning" (清潔中), "Maintenance" (維護中), "Reserved" (已預訂) |
+| RoomStatus (房間狀態)			        | 文字類型 (例如 'Available', 'Occupied', 'Maintenance')，應有一組預定義的值。	| 例子： "Available" (空房), "Occupied" (已入住), "Maintenance" (維護中) |
 | BasePrice (基本價格)	 		        | 數字類型 (貨幣)。								                            | 例子： 2500.00, 4500.50 (貨幣單位依系統設定) |
 | RoomCleanStatus (房間清潔狀態)	        | 布林值 (True/False) 或類似的表示方式，表示是否乾淨。			            | 例子： True (乾淨), False (未清潔) |
 
