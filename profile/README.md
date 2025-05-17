@@ -238,9 +238,7 @@ CREATE TABLE Employee (
     Department VARCHAR(100) NOT NULL,
     HireDate DATE NOT NULL,
     Phone VARCHAR(50) NOT NULL,
-    IsActive BOOLEAN NOT NULL,
-    RestaurantID INT,
-    FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID) ON DELETE SET NULL
+    IsActive BOOLEAN NOT NULL
 );
 
 CREATE TABLE Customer (
@@ -271,7 +269,7 @@ CREATE TABLE Season (
     StartDate DATE NOT NULL,
     EndDate DATE NOT NULL,
     PriceAdjustmentPercent DECIMAL(5, 2) NOT NULL,
-    CHECK (StartDate <= EndDate),
+    CHECK (StartDate <= EndDate)
 );
 
 CREATE TABLE Room_Season_Rate (
@@ -323,8 +321,8 @@ CREATE TABLE Booking (
 );
 
 CREATE TABLE Restaurant_Employee (
-    EmployeeID INT PRIMARY KEY,
-    RestaurantID INT NOT NULL,
+    EmployeeID INT PRIMARY KEY,  -- 一對一的關鍵：EmployeeID 是唯一主鍵
+    RestaurantID INT NOT NULL UNIQUE,  -- 確保一間餐廳也只分配給一個員工（若需要）
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
     FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID)
 );
