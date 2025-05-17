@@ -3,6 +3,7 @@
 > [!IMPORTANT]
 > 
 > - [Homework Common data models 2025/05/07](https://github.com/NFU-DB-Group-113-G01/.github/blob/main/homework/README.md)
+> - [SQL file](https://github.com/NFU-DB-Group-113-G01/sql_files)
 
 ## 👥 Members 成員
 | Student ID 學號 | Name 姓名 | Hobby 興趣 | Work 分工 | 
