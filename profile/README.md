@@ -134,7 +134,7 @@
 
 ## ER Diagram
 ### 圖片（點擊圖片🖼️並搭配鍵盤Ctrl⌨️與滑鼠滾輪🖱️可放大檢視圖片🔎）
-![ER Diagram](https://github.com/user-attachments/assets/8832f638-0d00-46dd-b787-3cc9ed9f9bc1)
+![ER Diagram](https://github.com/user-attachments/assets/4d21295d-714d-402e-95d3-bf9d6522eed1)
 
 ## SQL Schema
 ```SQL
@@ -237,6 +237,23 @@ CREATE TABLE Booking (
     FOREIGN KEY (RoomID) REFERENCES Room(RoomID),
     FOREIGN KEY (MealPlanID) REFERENCES Meal_Plan(MealPlanID),
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
+);
+
+CREATE TABLE Restaurant_Employee (
+    EmployeeID INT PRIMARY KEY,
+    RestaurantID INT NOT NULL,
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID)
+);
+
+CREATE TABLE Room_Cleaning (
+    CleaningID INT AUTO_INCREMENT PRIMARY KEY,
+    EmployeeID INT NOT NULL,
+    RoomID INT NOT NULL,
+    CleaningDate DATETIME NOT NULL,
+    Notes TEXT,
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
+    FOREIGN KEY (RoomID) REFERENCES Room(RoomID)
 );
 ```
 
