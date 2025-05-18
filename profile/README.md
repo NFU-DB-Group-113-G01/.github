@@ -127,8 +127,7 @@
 |------|----------|
 | CheckOutDate > CheckInDate | 退房日需晚於入住日 |
 | FinalPrice ≥ BasePrice     | 最終價格應包含基本價格與其他費用 |
-| ROOM.RoomStatus            | 限定值如：空房、已預訂、維修中 |
-| ROOM.RoomCleanStatus       | 限定值如：待清潔、清潔中、已完成 |
+| ROOM.RoomStatus            | 限定值如：正常、已入住、維修中 |
 | SEASON.StartDate < EndDate | 季節開始日需早於結束日 |
 | MEAL_PLAN_MENU 組合唯一     | 一道菜不能重複在同一方案中出現 |
 | ROOM_SEASON_RATE 組合唯一   | 同一房型與季節不能重複設定價格 |
@@ -165,9 +164,8 @@
 
 | 欄位 | 資料型態 | 舉例與說明 |
 |------|-----------|------------|
-| RoomStatus (房間狀態)			        | 文字類型 (例如 'Available', 'Occupied', 'Maintenance')，應有一組預定義的值。	| 例子： "Available" (空房), "Occupied" (已入住), "Maintenance" (維護中) |
+| RoomStatus (房間狀態)			        | 文字類型 (例如 'Available', 'Occupied', 'Maintenance')，應有一組預定義的值。	| 例子： "Available" (正常), "Occupied" (已入住), "Maintenance" (維護中) |
 | BasePrice (基本價格)	 		        | 數字類型 (貨幣)。								                            | 例子： 2500.00, 4500.50 (貨幣單位依系統設定) |
-| RoomCleanStatus (房間清潔狀態)	        | 布林值 (True/False) 或類似的表示方式，表示是否乾淨。			            | 例子： True (乾淨), False (未清潔) |
 
 5. Season (季節):
 
