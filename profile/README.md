@@ -217,9 +217,10 @@
 ## ER Diagram
 ### 圖片（點擊圖片🖼️並搭配鍵盤Ctrl⌨️與滑鼠滾輪🖱️可放大檢視圖片🔎）
 
-![ER Diagram](https://github.com/user-attachments/assets/9dd74d55-57af-4e27-8675-3b21675f61e4)
+![ER Diagram](https://github.com/user-attachments/assets/bb43784b-7572-4934-8f6a-85cc39d74e70)
 
-![ER Diagram black](https://github.com/user-attachments/assets/f124e2a7-7d3e-4a5d-b229-7fda369b4148)
+![ER Diagram black](https://github.com/user-attachments/assets/4f4873be-3ee1-4406-979e-4f7da18eaac4)
+
 
 ## SQL Schema
 ```SQL
