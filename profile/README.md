@@ -632,11 +632,10 @@ GRANT chef_role TO 'chef_user'@'localhost';
         B.CheckInDate,
         MP.Name AS MealPlanName,
         COUNT(B.BookingID) AS NumberOfBookings,
-        SUM(RT.BedCount) AS EstimatedGuests
+        SUM(B.NumberOfGuests) AS EstimatedGuests -- 修改：使用 Booking.NumberOfGuests
     FROM Booking B
     JOIN Meal_Plan MP ON B.MealPlanID = MP.MealPlanID
-    JOIN Room R ON B.RoomID = R.RoomID
-    JOIN Room_Type RT ON R.RoomTypeID = RT.RoomTypeID
+    -- 不再需要 JOIN Room 和 Room_Type 來估算人數
     WHERE B.CheckInDate >= CURDATE() AND B.CheckInDate <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) -- 例如未來7天
     GROUP BY B.CheckInDate, MP.Name
     ORDER BY B.CheckInDate, MP.Name;
