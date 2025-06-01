@@ -225,8 +225,8 @@
 ```SQL
 CREATE TABLE Restaurant (
     RestaurantID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
-    DayOfWeek VARCHAR(50) NOT NULL,
+    Name VARCHAR(255) NOT NULL CHECK (TRIM(Name) <> ''),
+    DayOfWeek VARCHAR(50) NOT NULL CHECK (TRIM(DayOfWeek) <> ''),
     OpenTime TIME NOT NULL,
     CloseTime TIME NOT NULL,
     CHECK (OpenTime < CloseTime)
@@ -234,24 +234,24 @@ CREATE TABLE Restaurant (
 
 CREATE TABLE Employee (
     EmployeeID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
-    Position VARCHAR(100) NOT NULL,
-    Department VARCHAR(100) NOT NULL,
-    HireDate DATE NOT NULL,
-    Phone VARCHAR(50) NOT NULL,
+    Name VARCHAR(255) NOT NULL CHECK (TRIM(Name) <> '' AND Name NOT REGEXP '[0-9]'),
+    Position VARCHAR(100) NOT NULL CHECK (TRIM(Position) <> ''),
+    Department VARCHAR(100) NOT NULL CHECK (TRIM(Department) <> ''),
+    HireDate DATE NOT NULL CHECK (HireDate <= CURDATE()),
+    Phone VARCHAR(50) NOT NULL CHECK (Phone REGEXP '^09[0-9]{8}$' OR Phone REGEXP '^(\\+8869|09)[0-9]{8}$' OR Phone REGEXP '^\\+?[0-9\\-() ]{7,20}$'),
     IsActive BOOLEAN NOT NULL
 );
 
 CREATE TABLE Customer (
     CustomerID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
-    Phone VARCHAR(50) NOT NULL,
-    Email VARCHAR(255) NOT NULL UNIQUE
+    Name VARCHAR(255) NOT NULL CHECK (TRIM(Name) <> '' AND Name NOT REGEXP '[0-9]'),
+    Phone VARCHAR(50) NOT NULL CHECK (Phone REGEXP '^09[0-9]{8}$' OR Phone REGEXP '^(\\+8869|09)[0-9]{8}$' OR Phone REGEXP '^\\+?[0-9\\-() ]{7,20}$'),
+    Email VARCHAR(255) NOT NULL UNIQUE CHECK (Email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$')
 );
 
 CREATE TABLE Room_Type (
     RoomTypeID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,
+    Name VARCHAR(100) NOT NULL CHECK (TRIM(Name) <> ''),
     BedCount INT NOT NULL CHECK (BedCount > 0),
     BasePrice DECIMAL(10, 2) NOT NULL CHECK (BasePrice >= 0)
 );
@@ -259,17 +259,17 @@ CREATE TABLE Room_Type (
 CREATE TABLE Room (
     RoomID INT AUTO_INCREMENT PRIMARY KEY,
     RoomTypeID INT NOT NULL,
-    RoomNumber VARCHAR(10) NOT NULL,
+    RoomNumber VARCHAR(10) NOT NULL CHECK (TRIM(RoomNumber) <> ''),
     RoomStatus ENUM('待清潔','清潔中','正常','維修中') NOT NULL DEFAULT '正常',
     FOREIGN KEY (RoomTypeID) REFERENCES Room_Type(RoomTypeID)
 );
 
 CREATE TABLE Season (
     SeasonID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,
+    Name VARCHAR(100) NOT NULL CHECK (TRIM(Name) <> ''),
     StartDate DATE NOT NULL,
     EndDate DATE NOT NULL,
-    PriceAdjustmentPercent DECIMAL(5, 2) NOT NULL,
+    PriceAdjustmentPercent DECIMAL(5, 2) NOT NULL CHECK (PriceAdjustmentPercent >= -100.00 AND PriceAdjustmentPercent <= 500.00), -- 假設調整範圍
     CHECK (StartDate <= EndDate)
 );
 
@@ -284,15 +284,15 @@ CREATE TABLE Room_Season_Rate (
 
 CREATE TABLE Meal_Plan (
     MealPlanID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,
+    Name VARCHAR(100) NOT NULL CHECK (TRIM(Name) <> ''),
     ExtraCharge DECIMAL(10, 2) NOT NULL CHECK (ExtraCharge >= 0)
 );
 
 CREATE TABLE Menu_Item (
     MenuItemID INT AUTO_INCREMENT PRIMARY KEY,
     RestaurantID INT NOT NULL,
-    Name VARCHAR(100) NOT NULL,
-    Category VARCHAR(100) NOT NULL,
+    Name VARCHAR(100) NOT NULL CHECK (TRIM(Name) <> ''),
+    Category VARCHAR(100) NOT NULL CHECK (TRIM(Category) <> ''),
     Price DECIMAL(10, 2) NOT NULL CHECK (Price >= 0),
     FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID)
 );
@@ -303,7 +303,7 @@ CREATE TABLE Meal_Plan_Menu (
     MenuItemID INT NOT NULL,
     FOREIGN KEY (MealPlanID) REFERENCES Meal_Plan(MealPlanID),
     FOREIGN KEY (MenuItemID) REFERENCES Menu_Item(MenuItemID),
-    UNIQUE (MealPlanID, MenuItemID)  -- 新增組合唯一約束
+    UNIQUE (MealPlanID, MenuItemID)
 );
 
 CREATE TABLE Booking (
@@ -314,7 +314,7 @@ CREATE TABLE Booking (
     EmployeeID INT NOT NULL,
     CheckInDate DATE NOT NULL,
     CheckOutDate DATE NOT NULL,
-    NumberOfGuests INT NOT NULL CHECK (NumberOfGuests > 0), -- 新增欄位：入住人數
+    NumberOfGuests INT NOT NULL CHECK (NumberOfGuests > 0),
     FinalPrice DECIMAL(10, 2) NOT NULL CHECK (FinalPrice >= 0),
     CHECK (CheckOutDate > CheckInDate),
     FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
@@ -326,7 +326,7 @@ CREATE TABLE Booking (
 CREATE TABLE Restaurant_Employee (
     EmployeeID INT NOT NULL,
     RestaurantID INT NOT NULL,
-    PRIMARY KEY (EmployeeID, RestaurantID), -- 組合主鍵，防止重複
+    PRIMARY KEY (EmployeeID, RestaurantID),
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
     FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID)
 );
