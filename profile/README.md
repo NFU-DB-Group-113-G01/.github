@@ -487,6 +487,187 @@ INSERT INTO Room_Cleaning (EmployeeID, RoomID, CleaningDate, Notes) VALUES
   (7,10,'2025-02-10 10:00:00','入住前清潔');
 ```
 
+## 使用者權限管理
+
+為了保護資料安全並確保不同使用者只能存取其職責範圍內的資訊，我們可以透過資料庫的角色和權限管理機制來實現。
+
+### 1. 角色建立
+
+針對不同角色，建立不同的rule規則。
+
+```SQL
+-- 建立角色
+CREATE ROLE customer_role;
+CREATE ROLE front_desk_role;
+CREATE ROLE admin_role;
+CREATE ROLE chef_role;
+
+-- 建立資料庫使用者
+CREATE USER 'customer_user'@'localhost';
+CREATE USER 'front_desk_user'@'localhost';
+CREATE USER 'admin_user'@'localhost';
+CREATE USER 'chef_user'@'localhost';
+
+-- 將角色賦予給使用者
+GRANT customer_role TO 'customer_user'@'localhost';
+GRANT front_desk_role TO 'front_desk_user'@'localhost';
+GRANT admin_role TO 'admin_user'@'localhost';
+GRANT chef_role TO 'chef_user'@'localhost';
+```
+
+### 2. 權限設定範例
+
+#### a. 顧客 (Customer View)
+
+顧客主要需要查詢房型、空房、建立與檢視訂單。
+
+*   **權限設定**:
+    *   `Customer`: `SELECT` (自己的資料), `UPDATE` (自己的資料).
+    *   `Room_Type`, `Room` (例如房號、狀態，但不含內部管理資訊), `Season`, `Room_Season_Rate`, `Meal_Plan`: `SELECT`.
+    *   `Booking`: `SELECT` (自己的訂單), `INSERT` (新訂單), `UPDATE` (修改自己的訂單，如取消).
+
+*   **SQL 範例**:
+
+    ```SQL
+    -- 授予顧客查詢房型資訊的權限
+    GRANT SELECT ON Room_Type TO customer_role;
+    GRANT SELECT (RoomNumber, RoomStatus, RoomTypeID) ON Room TO customer_role; -- 限制可見欄位
+    GRANT SELECT ON Season TO customer_role;
+    GRANT SELECT ON Room_Season_Rate TO customer_role;
+    GRANT SELECT ON Meal_Plan TO customer_role;
+
+    -- 授予查詢及管理自己訂單的權限
+    GRANT SELECT, INSERT, UPDATE ON Booking TO customer_role;
+    -- 授予查詢及修改自己基本資料的權限
+    GRANT SELECT, UPDATE (Name, Phone, Email) ON Customer TO customer_role;
+    ```
+
+*   **View**:
+    建立一個只顯示顧客自己訂單的view。
+
+    ```SQL
+    CREATE VIEW CustomerSelfBookings AS
+    SELECT BookingID, RoomID, MealPlanID, CheckInDate, CheckOutDate, FinalPrice
+    FROM Booking
+    WHERE CustomerID = CURRENT_USER_CUSTOMER_ID(); -- CURRENT_USER_CUSTOMER_ID() 需另設定
+    ```
+    ```SQL
+    GRANT SELECT ON CustomerSelfBookings TO customer_role;
+    ```
+
+#### b. 前台人員
+
+前台人員需要管理顧客資料、訂房、房況等。
+
+*   **權限設定**:
+    *   `Customer`: `SELECT`, `INSERT`, `UPDATE`.
+    *   `Room_Type`, `Season`, `Room_Season_Rate`, `Meal_Plan`: `SELECT`.
+    *   `Room`: `SELECT`, `UPDATE` (例如 `RoomStatus`).
+    *   `Booking`: `SELECT` (所有), `INSERT`, `UPDATE`.
+    *   `Room_Cleaning`: `SELECT`, `INSERT`, `UPDATE`.
+    *   `Employee`: `SELECT` (部分欄位，例如姓名、職位，排除敏感資訊).
+
+*   **SQL 範例**:
+
+    ```SQL
+    GRANT SELECT, INSERT, UPDATE ON Customer TO front_desk_role;
+    GRANT SELECT ON Room_Type TO front_desk_role;
+    GRANT SELECT, UPDATE (RoomStatus) ON Room TO front_desk_role;
+    GRANT SELECT, INSERT, UPDATE ON Booking TO front_desk_role;
+    GRANT SELECT, INSERT, UPDATE ON Room_Cleaning TO front_desk_role;
+    GRANT SELECT (EmployeeID, Name, Position, Department, Phone) ON Employee TO front_desk_role;
+    GRANT SELECT ON Meal_Plan TO front_desk_role;
+    GRANT SELECT ON Menu_Item TO front_desk_role;
+    GRANT SELECT ON Meal_Plan_Menu TO front_desk_role;
+    GRANT SELECT ON Restaurant TO front_desk_role;
+    ```
+
+*   **View**:
+    建立一個顯示今日入住/退房列表、或目前房況總覽的view。
+
+    ```SQL
+    CREATE VIEW DailyActivitySummary AS
+    SELECT B.BookingID, C.Name AS CustomerName, R.RoomNumber, B.CheckInDate, B.CheckOutDate, R.RoomStatus
+    FROM Booking B
+    JOIN Customer C ON B.CustomerID = C.CustomerID
+    JOIN Room R ON B.RoomID = R.RoomID
+    WHERE B.CheckInDate = CURDATE() OR B.CheckOutDate = CURDATE();
+    ```
+    ```SQL
+    GRANT SELECT ON DailyActivitySummary TO front_desk_role;
+    ```
+
+#### c. 廚師
+
+廚師主要需要查看菜單、餐點方案以及當日或近期的餐點需求。
+
+*   **權限設定**:
+    *   `Menu_Item`: `SELECT`. (若允許廚師標記食材狀態或暫時下架，可考慮 `UPDATE` 特定欄位)
+    *   `Meal_Plan`: `SELECT`.
+    *   `Meal_Plan_Menu`: `SELECT`.
+    *   `Booking`: `SELECT` (例如 `MealPlanID`, `CheckInDate`, `CheckOutDate` 及相關顧客數量，以預估備餐量).
+    *   `Restaurant`: `SELECT` (查看其所屬餐廳的資訊).
+
+*   **SQL 範例**:
+
+    ```SQL
+    GRANT SELECT ON Menu_Item TO chef_role;
+    GRANT SELECT ON Meal_Plan TO chef_role;
+    GRANT SELECT ON Meal_Plan_Menu TO chef_role;
+    -- 授予廚師查看訂單中餐飲相關資訊的權限
+    GRANT SELECT (BookingID, CustomerID, RoomID, MealPlanID, CheckInDate, CheckOutDate) ON Booking TO chef_role;
+    GRANT SELECT ON Restaurant TO chef_role;
+    ```
+
+*   **View**:
+    顯示未來一段時間內各餐點方案的預訂數量。
+
+    ```SQL
+    CREATE VIEW UpcomingMealRequirements AS
+    SELECT
+        B.CheckInDate,
+        MP.Name AS MealPlanName,
+        COUNT(B.BookingID) AS NumberOfBookings,
+        SUM(RT.BedCount) AS EstimatedGuests
+    FROM Booking B
+    JOIN Meal_Plan MP ON B.MealPlanID = MP.MealPlanID
+    JOIN Room R ON B.RoomID = R.RoomID
+    JOIN Room_Type RT ON R.RoomTypeID = RT.RoomTypeID
+    WHERE B.CheckInDate >= CURDATE() AND B.CheckInDate <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) -- 例如未來7天
+    GROUP BY B.CheckInDate, MP.Name
+    ORDER BY B.CheckInDate, MP.Name;
+    ```
+    ```SQL
+    GRANT SELECT ON UpcomingMealRequirements TO chef_role;
+    ```
+
+#### d. 後台管理員
+
+後台管理員通常擁有最高權限，可以管理所有資料和系統設定。
+
+*   **權限設定**:
+    *   對所有資料表擁有 `SELECT`, `INSERT`, `UPDATE`, `DELETE` 權限。
+    *   管理員工資料 (`Employee`)、房型價格 (`Room_Type.BasePrice`, `Room_Season_Rate`)、季節設定 (`Season`)、餐廳與菜單 (`Restaurant`, `Menu_Item`) 等。
+
+*   **SQL 範例**:
+
+    ```SQL
+    GRANT ALL PRIVILEGES ON hotel.* TO admin_user;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Customer TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Employee TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Room TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Room_Type TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Booking TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Meal_Plan TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Menu_Item TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Restaurant TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Season TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Room_Season_Rate TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Meal_Plan_Menu TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Restaurant_Employee TO admin_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Room_Cleaning TO admin_role;
+    ```
+
 ## 系統運作流程
 1. 系統檢查 customer 表是否有顧客 沒有的話就直接插入添加
 2. 根據顧客在網站的操作 新增 booking
