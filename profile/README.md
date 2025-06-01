@@ -655,20 +655,7 @@ GRANT chef_role TO 'chef_user'@'localhost';
 *   **SQL 範例**:
 
     ```SQL
-    GRANT ALL PRIVILEGES ON hotel.* TO admin_user;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Customer TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Employee TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Room TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Room_Type TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Booking TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Meal_Plan TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Menu_Item TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Restaurant TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Season TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Room_Season_Rate TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Meal_Plan_Menu TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Restaurant_Employee TO admin_role;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON Room_Cleaning TO admin_role;
+    GRANT ALL PRIVILEGES ON hotel.* TO admin_role;
     ```
 
 ## 系統運作流程
