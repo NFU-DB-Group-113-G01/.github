@@ -967,13 +967,26 @@ GRANT chef_role TO 'chef_user'@'localhost';
             ```
 
 ## 系統運作流程
-1. 系統檢查 customer 表是否有顧客 沒有的話就直接插入添加
-2. 根據顧客在網站的操作 新增 booking
-3. clean 會表示打掃人員要打掃的房間
-4. Meal_Plan 表示是否有要用餐與價格類別
-5. Room_Type 表示各種房型 包括房型與床數
-6. Season 表示季節 可依時段調整房型價格
-7. 前台人員可透過介面調整與得知訂房資訊
+1. 顧客
+   
+![image](https://github.com/user-attachments/assets/c6375ea7-de55-4496-b498-9846fc4ca00a)
+
+2. 前台人員
+   
+![image](https://github.com/user-attachments/assets/983d7570-c1dd-4130-abd6-c8ce3cea25cf)
+![image](https://github.com/user-attachments/assets/dd34fe85-73cc-4b39-b86c-f1bb6a098da2)
+![image](https://github.com/user-attachments/assets/4661ca02-6145-4c17-b1fc-f623a04003ae)
+
+3. 廚師
+
+![image](https://github.com/user-attachments/assets/31ba3747-8ec7-4ca4-865f-e9d60145e934)
+
+
+4. 後台人員
+
+![image](https://github.com/user-attachments/assets/b2513093-0ec0-46da-bdd5-9633a8777725)
+![image](https://github.com/user-attachments/assets/58050661-aa82-49d2-b429-b3fb8aec3f5f)
+![image](https://github.com/user-attachments/assets/1e59ace8-fe53-4dc9-8ad0-3d0dabf64823)
 
 
 
