@@ -542,23 +542,113 @@ GRANT chef_role TO 'chef_user'@'localhost';
     GRANT SELECT ON Meal_Plan TO customer_role;
 
     -- 授予查詢及管理自己訂單的權限
-    GRANT SELECT, INSERT, UPDATE ON Booking TO customer_role;
+    GRANT SELECT, INSERT ON Booking TO customer_role;
     -- 授予查詢及修改自己基本資料的權限
     GRANT SELECT, UPDATE (Name, Phone, Email) ON Customer TO customer_role;
     ```
 
 *   **View**:
-    建立一個只顯示顧客自己訂單的view。
 
-    ```SQL
-    CREATE VIEW CustomerSelfBookings AS
-    SELECT BookingID, RoomID, MealPlanID, CheckInDate, CheckOutDate, FinalPrice
-    FROM Booking
-    WHERE CustomerID = CURRENT_USER_CUSTOMER_ID(); -- CURRENT_USER_CUSTOMER_ID() 需另設定
-    ```
-    ```SQL
-    GRANT SELECT ON CustomerSelfBookings TO customer_role;
-    ```
+    1.  **顯示顧客資料 (Customer Profile)**:
+        允許顧客查看自己的基本資料。更新資料的操作則透過對 `Customer` 表的 `UPDATE` 權限進行。
+
+        ```SQL
+        CREATE VIEW CustomerProfileView AS
+        SELECT
+            CustomerID,
+            Name,
+            Phone,
+            Email
+        FROM
+            Customer
+        WHERE
+            CustomerID = CURRENT_USER_CUSTOMER_ID(); -- 假設 CURRENT_USER_CUSTOMER_ID() 是一個能獲取當前登入顧客ID的函數
+        ```
+        ```SQL
+        GRANT SELECT ON CustomerProfileView TO customer_role;
+        -- 顧客更新資料的權限已在前面 GRANT SELECT, UPDATE (Name, Phone, Email) ON Customer TO customer_role; 中授予
+        ```
+
+    2.  **顯示房型與房間狀態 (Room Information)**:
+        讓顧客可以查看不同房型的資訊以及房間的即時狀態。
+
+        ```SQL
+        CREATE VIEW RoomAvailabilityView AS
+        SELECT
+            rt.Name AS RoomTypeName,
+            rt.BedCount,
+            rt.BasePrice,
+            r.RoomNumber,
+            r.RoomStatus
+        FROM
+            Room r
+            JOIN Room_Type rt ON r.RoomTypeID = rt.RoomTypeID;
+        ```
+        ```SQL
+        GRANT SELECT ON RoomAvailabilityView TO customer_role;
+        ```
+
+    3.  **顯示季節與房價 (Seasonal Pricing)**:
+        顧客可以查詢不同季節下各房型的價格。
+
+        ```SQL
+        CREATE VIEW RoomSeasonalPricingView AS
+        SELECT
+            rt.Name AS RoomTypeName,
+            s.Name AS SeasonName,
+            s.StartDate AS SeasonStartDate,
+            s.EndDate AS SeasonEndDate,
+            COALESCE(rsr.AdjustedPrice, rt.BasePrice * (1 + s.PriceAdjustmentPercent / 100)) AS FinalPricePerNight
+        FROM
+            Room_Type rt
+            CROSS JOIN Season s -- 顯示所有房型與季節的組合
+            LEFT JOIN Room_Season_Rate rsr ON rt.RoomTypeID = rsr.RoomTypeID AND s.SeasonID = rsr.SeasonID;
+        ```
+        ```SQL
+        GRANT SELECT ON RoomSeasonalPricingView TO customer_role;
+        ```
+
+    4.  **顯示餐飲類別 (Meal Plan Options)**:
+        顧客可以查看可選的餐飲計劃及其價格。
+
+        ```SQL
+        CREATE VIEW MealPlanOptionsView AS
+        SELECT
+            MealPlanID,
+            Name,
+            ExtraCharge
+        FROM
+            Meal_Plan;
+        ```
+        ```SQL
+        GRANT SELECT ON MealPlanOptionsView TO customer_role;
+        ```
+
+    5.  **顯示顧客自己的訂單 (Customer Bookings)**:
+        建立一個只顯示顧客自己訂單的view。
+
+        ```SQL
+        CREATE VIEW CustomerSelfBookings AS
+        SELECT 
+            b.BookingID, 
+            rt.Name AS RoomTypeName,
+            r.RoomNumber, 
+            mp.Name AS MealPlanName,
+            b.CheckInDate, 
+            b.CheckOutDate, 
+            b.NumberOfGuests,
+            b.FinalPrice
+        FROM 
+            Booking b
+            JOIN Room r ON b.RoomID = r.RoomID
+            JOIN Room_Type rt ON r.RoomTypeID = rt.RoomTypeID
+            JOIN Meal_Plan mp ON b.MealPlanID = mp.MealPlanID
+        WHERE 
+            b.CustomerID = CURRENT_USER_CUSTOMER_ID(); -- 假設 CURRENT_USER_CUSTOMER_ID() 是一個能獲取當前登入顧客ID的函數
+        ```
+        ```SQL
+        GRANT SELECT ON CustomerSelfBookings TO customer_role;
+        ```
 
 #### b. 前台人員
 
@@ -585,29 +675,101 @@ GRANT chef_role TO 'chef_user'@'localhost';
     GRANT SELECT ON Menu_Item TO front_desk_role;
     GRANT SELECT ON Meal_Plan_Menu TO front_desk_role;
     GRANT SELECT ON Restaurant TO front_desk_role;
+    GRANT SELECT ON Season TO front_desk_role; -- 前台人員查詢價格時可能需要
+    GRANT SELECT ON Room_Season_Rate TO front_desk_role; -- 前台人員查詢價格時可能需要
     ```
 
 *   **View**:
-    建立一個顯示今日入住/退房列表、或目前房況總覽的view。
+    為了支援前台人員的日常工作流程，並對應提供的流程圖，可以建立或利用以下 Views：
 
-    ```SQL
-    CREATE VIEW DailyActivitySummary AS
-    SELECT B.BookingID, C.Name AS CustomerName, R.RoomNumber, B.CheckInDate, B.CheckOutDate, R.RoomStatus
-    FROM Booking B
-    JOIN Customer C ON B.CustomerID = C.CustomerID
-    JOIN Room R ON B.RoomID = R.RoomID
-    WHERE B.CheckInDate = CURDATE() OR B.CheckOutDate = CURDATE(); -- CURDATE() 回傳當前日期
-    ```
-    ```SQL
-    GRANT SELECT ON DailyActivitySummary TO front_desk_role;
-    ```
+    **1. 顧客資料管理 (Manage Customer Data)**
+    *   **查詢/查看顧客資料**:
+        為方便前台人員查詢顧客，可建立以下 View：
+        ```SQL
+        CREATE VIEW AllCustomersView AS
+        SELECT CustomerID, Name, Phone, Email
+        FROM Customer;
+        ```
+        ```SQL
+        GRANT SELECT ON AllCustomersView TO front_desk_role;
+        -- 前台人員可使用此 View 搜尋顧客。根據「管理顧客資料」流程圖，查詢後可選擇查看或更新。
+        -- 查看顧客詳細資料是透過對 Customer 表的 SELECT 權限。
+        ```
+    *   **新增顧客資料**: 根據實際需求，前台人員通常也需要新增顧客。此操作透過對 `Customer` 表的 `INSERT` 權限直接執行。
+    *   **更新顧客資料**: 如流程圖所示，查詢到顧客資料後，若需更新，則透過對 `Customer` 表的 `UPDATE` 權限直接操作。
+
+    **2. 訂房管理 (Manage Bookings)**
+    *   **查詢/查看訂房**:
+        為方便前台人員查詢所有訂房記錄，可建立以下 View：
+        ```SQL
+        CREATE VIEW AllBookingsView AS
+        SELECT
+            b.BookingID,
+            c.Name AS CustomerName,
+            c.Phone AS CustomerPhone,
+            rt.Name AS RoomTypeName,
+            r.RoomNumber,
+            mp.Name AS MealPlanName,
+            b.CheckInDate,
+            b.CheckOutDate,
+            b.NumberOfGuests,
+            b.FinalPrice,
+            e.Name AS BookingEmployeeName
+        FROM
+            Booking b
+            JOIN Customer c ON b.CustomerID = c.CustomerID
+            JOIN Room r ON b.RoomID = r.RoomID
+            JOIN Room_Type rt ON r.RoomTypeID = rt.RoomTypeID
+            JOIN Meal_Plan mp ON b.MealPlanID = mp.MealPlanID
+            JOIN Employee e ON b.EmployeeID = e.EmployeeID;
+        ```
+        ```SQL
+        GRANT SELECT ON AllBookingsView TO front_desk_role;
+        ```
+        對於每日活動（如今日入住/退房），可使用已有的 `DailyActivitySummary` View：
+        ```SQL
+        CREATE VIEW DailyActivitySummary AS
+        SELECT B.BookingID, C.Name AS CustomerName, R.RoomNumber, B.CheckInDate, B.CheckOutDate, R.RoomStatus
+        FROM Booking B
+        JOIN Customer C ON B.CustomerID = C.CustomerID
+        JOIN Room R ON B.RoomID = R.RoomID
+        WHERE B.CheckInDate = CURDATE() OR B.CheckOutDate = CURDATE();
+        ```
+        ```SQL
+        GRANT SELECT ON DailyActivitySummary TO front_desk_role;
+        -- 根據「管理訂房」流程圖，若無新增需求，則進行查詢，之後可選擇查看或更新。
+        ```
+    *   **新增訂房**: 如流程圖所示，若有新的訂房需求，則透過對 `Booking` 表的 `INSERT` 權限直接操作。「確認訂房」為後續應用程式邏輯。
+    *   **更新訂房**: 如流程圖所示，查詢到訂房記錄後，若需更新，則透過對 `Booking` 表的 `UPDATE` 權限直接操作。
+
+    **3. 房況管理 (Manage Room Status)**
+    *   **查看房況**:
+        為方便前台人員查看所有房間的即時狀態，可建立以下 View：
+        ```SQL
+        CREATE VIEW FullRoomStatusView AS
+        SELECT
+            r.RoomNumber,
+            rt.Name AS RoomTypeName,
+            r.RoomStatus,
+            rt.BedCount
+        FROM
+            Room r
+            JOIN Room_Type rt ON r.RoomTypeID = rt.RoomTypeID
+        ORDER BY
+            r.RoomNumber;
+        ```
+        ```SQL
+        GRANT SELECT ON FullRoomStatusView TO front_desk_role;
+        -- 根據「管理房況」流程圖，前台人員可選擇查看房況。
+        ```
+    *   **更新房況**: 如流程圖所示，若需要更新房況，則透過對 `Room` 表的 `UPDATE (RoomStatus)` 權限直接操作。
 
 #### c. 廚師
 
 廚師主要需要查看菜單、餐點方案以及當日或近期的餐點需求。
 
 *   **權限設定**:
-    *   `Menu_Item`: `SELECT`. (若允許廚師標記食材狀態或暫時下架，可考慮 `UPDATE` 特定欄位)
+    *   `Menu_Item`: `SELECT`, `INSERT`, `UPDATE`, `DELETE` (允許廚師新增、修改、刪除菜單項目，並管理其品項類別).
     *   `Meal_Plan`: `SELECT`.
     *   `Meal_Plan_Menu`: `SELECT`.
     *   `Booking`: `SELECT` (例如 `MealPlanID`, `CheckInDate`, `CheckOutDate` 及相關顧客數量，以預估備餐量).
@@ -616,34 +778,102 @@ GRANT chef_role TO 'chef_user'@'localhost';
 *   **SQL 範例**:
 
     ```SQL
-    GRANT SELECT ON Menu_Item TO chef_role;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON Menu_Item TO chef_role;
     GRANT SELECT ON Meal_Plan TO chef_role;
     GRANT SELECT ON Meal_Plan_Menu TO chef_role;
     -- 授予廚師查看訂單中餐飲相關資訊的權限
-    GRANT SELECT (BookingID, CustomerID, RoomID, MealPlanID, CheckInDate, CheckOutDate) ON Booking TO chef_role;
+    GRANT SELECT (BookingID, CustomerID, RoomID, MealPlanID, CheckInDate, CheckOutDate, NumberOfGuests) ON Booking TO chef_role;
     GRANT SELECT ON Restaurant TO chef_role;
     ```
 
 *   **View**:
-    顯示未來一段時間內各餐點方案的預訂數量。
+    為了支援廚師的日常工作流程，可以建立以下 Views：
 
-    ```SQL
-    CREATE VIEW UpcomingMealRequirements AS
-    SELECT
-        B.CheckInDate,
-        MP.Name AS MealPlanName,
-        COUNT(B.BookingID) AS NumberOfBookings,
-        SUM(B.NumberOfGuests) AS EstimatedGuests -- 修改：使用 Booking.NumberOfGuests
-    FROM Booking B
-    JOIN Meal_Plan MP ON B.MealPlanID = MP.MealPlanID
-    -- 不再需要 JOIN Room 和 Room_Type 來估算人數
-    WHERE B.CheckInDate >= CURDATE() AND B.CheckInDate <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) -- 例如未來7天
-    GROUP BY B.CheckInDate, MP.Name
-    ORDER BY B.CheckInDate, MP.Name;
-    ```
-    ```SQL
-    GRANT SELECT ON UpcomingMealRequirements TO chef_role;
-    ```
+    1.  **查看菜單 (ChefMenuView)**:
+        顯示所有菜單項目及其詳細資訊（名稱、類別、價格）。
+        ```SQL
+        CREATE VIEW ChefMenuView AS
+        SELECT
+            mi.MenuItemID,
+            mi.Name,
+            mi.Category,
+            mi.Price,
+            r.Name AS RestaurantName
+        FROM
+            Menu_Item mi
+            JOIN Restaurant r ON mi.RestaurantID = r.RestaurantID;
+        ```
+        ```SQL
+        GRANT SELECT ON ChefMenuView TO chef_role;
+        ```
+
+    2.  **查看餐點方案 (ChefMealPlanView)**:
+        顯示餐點方案及其包含的菜單項目。
+        ```SQL
+        CREATE VIEW ChefMealPlanView AS
+        SELECT
+            mp.Name AS MealPlanName,
+            mp.ExtraCharge,
+            mi.Name AS MenuItemName,
+            mi.Category AS MenuItemCategory,
+            mi.Price AS MenuItemPrice
+        FROM
+            Meal_Plan mp
+            JOIN Meal_Plan_Menu mpm ON mp.MealPlanID = mpm.MealPlanID
+            JOIN Menu_Item mi ON mpm.MenuItemID = mi.MenuItemID;
+        ```
+        ```SQL
+        GRANT SELECT ON ChefMealPlanView TO chef_role;
+        ```
+
+    3.  **查看當日及近期餐點需求 (UpcomingMealRequirementsView)**:
+        顯示未來一段時間內各餐點方案的預訂數量及預估用餐人數。
+        ```SQL
+        CREATE VIEW UpcomingMealRequirementsView AS
+        SELECT
+            B.CheckInDate,
+            MP.Name AS MealPlanName,
+            COUNT(B.BookingID) AS NumberOfBookings,
+            SUM(B.NumberOfGuests) AS EstimatedGuests
+        FROM Booking B
+        JOIN Meal_Plan MP ON B.MealPlanID = MP.MealPlanID
+        WHERE B.CheckInDate >= CURDATE() AND B.CheckInDate <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) -- 例如未來7天
+        GROUP BY B.CheckInDate, MP.Name
+        ORDER BY B.CheckInDate, MP.Name;
+        ```
+        ```SQL
+        GRANT SELECT ON UpcomingMealRequirementsView TO chef_role;
+        ```
+
+    4.  **查看品項類別摘要 (MenuItemCategorySummaryView)**:
+        顯示目前所有品項類別及其包含的菜單項目數量，輔助「查看現有品項類別」及「查看品項類別的統計資訊」。
+        ```SQL
+        CREATE VIEW MenuItemCategorySummaryView AS
+        SELECT
+            Category,
+            COUNT(MenuItemID) AS NumberOfItems,
+            GROUP_CONCAT(Name ORDER BY Name SEPARATOR ', ') AS ItemsInCategory -- 列出該類別下的部分品項
+        FROM
+            Menu_Item
+        GROUP BY
+            Category
+        ORDER BY
+            Category;
+        ```
+        ```SQL
+        GRANT SELECT ON MenuItemCategorySummaryView TO chef_role;
+        ```
+    
+    **管理品項類別操作說明**:
+    根據流程圖，廚師還需要管理品項類別。這部分操作主要透過對 `Menu_Item` 表的 `INSERT`, `UPDATE`, `DELETE` 權限來實現：
+    *   **查看現有品項類別** 及 **統計資訊**: 可透過 `MenuItemCategorySummaryView` 達成。
+    *   **新增品項類別**: 當廚師新增一個 `Menu_Item` 時，可以在 `Category` 欄位輸入新的類別名稱，從而建立新的品項類別。
+    *   **編輯品項類別**: 廚師可以修改現有 `Menu_Item` 的 `Category` 欄位。若要將一個類別名稱（例如 "點心"）統一修改為另一個名稱（例如 "甜點"），則需要更新所有相關 `Menu_Item` 的 `Category`。
+        ```SQL
+        -- 範例：將所有 '點心' 類別的菜品改為 '甜點' 類別 (此操作由具有 UPDATE 權限的廚師執行)
+        -- UPDATE Menu_Item SET Category = '甜點' WHERE Category = '點心';
+        ```
+    *   **刪除品項類別**: 如果一個品項類別下的所有 `Menu_Item` 都被刪除，或者它們的類別都被修改為其他類別，則該品項類別在實質上即被移除。廚師可透過刪除相關 `Menu_Item` 或修改其 `Category` 來達成。
 
 #### d. 後台管理員
 
@@ -658,6 +888,83 @@ GRANT chef_role TO 'chef_user'@'localhost';
     ```SQL
     GRANT ALL PRIVILEGES ON hotel.* TO admin_role;
     ```
+
+*   **操作說明與輔助 Views (Operation Description and Helper Views)**:
+    後台管理員憑藉 `ALL PRIVILEGES` 權限，可直接對資料庫進行全面的管理。以下根據流程圖說明主要管理功能，並提供輔助查詢的 View 範例：
+
+    **1. 管理員工資料 (Manage Employee Data)**
+    *   管理員可直接對 `Employee` 表進行查詢 (`SELECT`)、新增 (`INSERT`)、修改 (`UPDATE`) 及刪除 (`DELETE`) 操作。
+    *   為方便查詢員工資料，可建立 View：
+        ```SQL
+        CREATE VIEW AdminEmployeeDetailsView AS
+        SELECT EmployeeID, Name, Position, Department, HireDate, Phone, IsActive
+        FROM Employee;
+        -- GRANT SELECT ON AdminEmployeeDetailsView TO admin_role; (已由 ALL PRIVILEGES 涵蓋)
+        ```
+
+    **2. 管理房間資訊 (Manage Room Information)**
+    *   **管理房型價格 (`Room_Type.BasePrice`)**:
+        *   **查詢價格**: 直接 `SELECT` `Room_Type` 表。
+        *   **設定價格**: 直接 `UPDATE` `Room_Type` 表的 `BasePrice` 欄位。
+        *   輔助查詢 View：
+            ```SQL
+            CREATE VIEW AdminRoomTypeInfoView AS
+            SELECT RoomTypeID, Name, BedCount, BasePrice
+            FROM Room_Type;
+            -- GRANT SELECT ON AdminRoomTypeInfoView TO admin_role;
+            ```
+    *   **設定季節 (`Season`)**:
+        *   管理員可直接對 `Season` 表進行查詢 (`SELECT`)、新增 (`INSERT`)、修改 (`UPDATE`) 及刪除 (`DELETE`) 操作。
+        *   輔助查詢 View：
+            ```SQL
+            CREATE VIEW AdminSeasonInfoView AS
+            SELECT SeasonID, Name, StartDate, EndDate, PriceAdjustmentPercent
+            FROM Season;
+            -- GRANT SELECT ON AdminSeasonInfoView TO admin_role;
+            ```
+    *   **設定季節房價 (`Room_Season_Rate`)**:
+        *   管理員可直接對 `Room_Season_Rate` 表進行查詢 (`SELECT`)、新增 (`INSERT`)、修改 (`UPDATE`) 及刪除 (`DELETE`) 操作。
+        *   輔助查詢 View：
+            ```SQL
+            CREATE VIEW AdminRoomSeasonRateDetailsView AS
+            SELECT
+                rsr.RoomTypeID,
+                rt.Name AS RoomTypeName,
+                rsr.SeasonID,
+                s.Name AS SeasonName,
+                rsr.AdjustedPrice
+            FROM Room_Season_Rate rsr
+            JOIN Room_Type rt ON rsr.RoomTypeID = rt.RoomTypeID
+            JOIN Season s ON rsr.SeasonID = s.SeasonID;
+            -- GRANT SELECT ON AdminRoomSeasonRateDetailsView TO admin_role;
+            ```
+
+    **3. 管理餐廳資訊 (Manage Restaurant Information)**
+    *   **管理餐廳資訊 (`Restaurant`)**:
+        *   管理員可直接對 `Restaurant` 表進行查詢 (`SELECT`)、新增 (`INSERT`)、修改 (`UPDATE`) 及刪除 (`DELETE`) 操作。
+        *   輔助查詢 View：
+            ```SQL
+            CREATE VIEW AdminRestaurantInfoView AS
+            SELECT RestaurantID, Name, DayOfWeek, OpenTime, CloseTime
+            FROM Restaurant;
+            -- GRANT SELECT ON AdminRestaurantInfoView TO admin_role;
+            ```
+    *   **管理菜單項目 (`Menu_Item`)**:
+        *   管理員可直接對 `Menu_Item` 表進行查詢 (`SELECT`)、新增 (`INSERT`)、修改 (`UPDATE`) 及刪除 (`DELETE`) 操作。
+        *   輔助查詢 View：
+            ```SQL
+            CREATE VIEW AdminMenuItemDetailsView AS
+            SELECT
+                mi.MenuItemID,
+                mi.RestaurantID,
+                r.Name AS RestaurantName,
+                mi.Name AS MenuItemName,
+                mi.Category,
+                mi.Price
+            FROM Menu_Item mi
+            JOIN Restaurant r ON mi.RestaurantID = r.RestaurantID;
+            -- GRANT SELECT ON AdminMenuItemDetailsView TO admin_role;
+            ```
 
 ## 系統運作流程
 1. 系統檢查 customer 表是否有顧客 沒有的話就直接插入添加
