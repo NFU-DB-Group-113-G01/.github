@@ -5,8 +5,8 @@
 > 
 > - [Homework Common data models 2025/05/07](https://github.com/NFU-DB-Group-113-G01/.github/blob/main/homework/README.md)
 > - [SQL file](https://github.com/NFU-DB-Group-113-G01/sql_files)
-> - [PPT](https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content=DAGj9Gu7cDI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9883e3e557)
-> - [Word](https://nfuedu-my.sharepoint.com/:w:/g/personal/41143259_nfu_edu_tw/EanbDOuy-aJOgFk54pffUqABEhZOk0Xn0WXvHpZELCFcXg?e=yktjeV)
+> - [PPT期末報告簡報](https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content=DAGj9Gu7cDI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9883e3e557)
+> - [Word期末報告報告書](https://nfuedu-my.sharepoint.com/:w:/g/personal/41143259_nfu_edu_tw/EanbDOuy-aJOgFk54pffUqABEhZOk0Xn0WXvHpZELCFcXg?e=yktjeV)
 
 ## 👥 Members 成員
 | Student ID 學號 | Name 姓名 | Hobby 興趣 | Work 分工 | 
@@ -217,10 +217,14 @@
     | OpenTime (營業開始時間)  | 時間類型。                                                         | 例子： "07:00" (此限制由 `TIME` 型別強制時間格式)                                           |
     | CloseTime (營業結束時間) | 時間類型，應晚於 OpenTime (目前 SQL Schema 限制為同一日內)。        | 例子： "21:00" `CHECK (OpenTime < CloseTime)` (依據 SQL Schema，未處理跨午夜情況)         |
 
-## ER Diagram
+## ER Diagram 簡圖
 ### 圖片（點擊圖片🖼️並搭配鍵盤Ctrl⌨️與滑鼠滾輪🖱️可放大檢視圖片🔎）
 
-![ER Diagram](https://github.com/user-attachments/assets/bb43784b-7572-4934-8f6a-85cc39d74e70)
+![ER Diagram2](https://github.com/user-attachments/assets/8caab706-ef67-4724-990a-7500d86e72d9)
+
+## ER Diagram
+### 圖片（點擊圖片🖼️並搭配鍵盤Ctrl⌨️與滑鼠滾輪🖱️可放大檢視圖片🔎）
+![ER Diagram](https://github.com/user-attachments/assets/c481f5f3-2cd9-40ae-921e-be52c74bcae5)
 
 ![ER Diagram black](https://github.com/user-attachments/assets/4f4873be-3ee1-4406-979e-4f7da18eaac4)
 
