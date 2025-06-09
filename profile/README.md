@@ -1,9 +1,12 @@
 # 👋 Group G01
 
 > [!IMPORTANT]
+> ## 🔗 Link
 > 
 > - [Homework Common data models 2025/05/07](https://github.com/NFU-DB-Group-113-G01/.github/blob/main/homework/README.md)
 > - [SQL file](https://github.com/NFU-DB-Group-113-G01/sql_files)
+> - [PPT](https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content=DAGj9Gu7cDI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9883e3e557)
+> - [Word](https://nfuedu-my.sharepoint.com/:w:/g/personal/41143259_nfu_edu_tw/EanbDOuy-aJOgFk54pffUqABEhZOk0Xn0WXvHpZELCFcXg?e=yktjeV)
 
 ## 👥 Members 成員
 | Student ID 學號 | Name 姓名 | Hobby 興趣 | Work 分工 | 
@@ -13,7 +16,7 @@
 | 41143245 | 楊祐宇 | 🕹️             | 蒐集資料與整理架構 |
 | 41143259 | 羅文鍵 | 看動漫、coding  | 建置資料庫 編輯與審核 Github | 
 
-# 🏨 [飯店管理系統](#-link)
+# 🏨 飯店管理系統
 ## 🔸 應用情境
 
 ### 住宿管理系統
@@ -988,7 +991,3 @@ GRANT chef_role TO 'chef_user'@'localhost';
 ![image](https://github.com/user-attachments/assets/58050661-aa82-49d2-b429-b3fb8aec3f5f)
 ![image](https://github.com/user-attachments/assets/1e59ace8-fe53-4dc9-8ad0-3d0dabf64823)
 
-
-
-## 🔗 Link
-- [簡報](https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content=DAGj9Gu7cDI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9883e3e557)
