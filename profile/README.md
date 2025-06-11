@@ -5,8 +5,10 @@
 > 
 > - [Homework Common data models 2025/05/07](https://github.com/NFU-DB-Group-113-G01/.github/blob/main/homework/README.md)
 > - [SQL file](https://github.com/NFU-DB-Group-113-G01/sql_files)
-> - [PPT期末報告簡報](https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content=DAGj9Gu7cDI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9883e3e557)
-> - [Word期末報告報告書](https://nfuedu-my.sharepoint.com/:w:/g/personal/41143259_nfu_edu_tw/EanbDOuy-aJOgFk54pffUqABKUgBId_OwyQVK4shP_kPGw)
+> - [PPT期末報告簡報線上檢視](https://www.canva.com/design/DAGj9Gu7cDI/K8RuwSeM_7NDCD4SlW22tg/view?utm_content=DAGj9Gu7cDI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9883e3e557)
+> - [Word期末報告報告書線上檢視](https://nfuedu-my.sharepoint.com/:w:/g/personal/41143259_nfu_edu_tw/EanbDOuy-aJOgFk54pffUqABKUgBId_OwyQVK4shP_kPGw)
+> - [PPT期末報告簡報檔案](https://github.com/NFU-DB-Group-113-G01/.github/blob/main/profile/%E9%A3%AF%E5%BA%97%E7%AE%A1%E7%90%86%E7%B3%BB%E7%B5%B1PPT.pdf)
+> - [Word期末報告報告書檔案](https://github.com/NFU-DB-Group-113-G01/.github/blob/main/profile/%E9%A3%AF%E5%BA%97%E7%AE%A1%E7%90%86%E8%B3%87%E6%96%99%E5%BA%ABPDF.pdf)
 
 ## 👥 Members 成員
 | Student ID 學號 | Name 姓名 | Hobby 興趣 | Work 分工 | 
